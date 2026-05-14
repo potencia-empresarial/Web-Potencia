@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta name="facebook-domain-verification" content="zgjv5roifkn4e22wxwcgaraibnbz2w" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PotencIA Empresarial | Datos & Automatización</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Palette: Vibrant Tech (Blue/Purple/Amber) 
+         Primary: #2563EB (Blue 600)
+         Secondary: #7C3AED (Violet 600)
+         Accent: #F59E0B (Amber 500)
+    -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#2563EB',
+                            dark: '#1E3A8A',
+                            purple: '#7C3AED',
+                            accent: '#F59E0B',
+                            light: '#F3F4F6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F3F4F6;
+        }
+
+        /* Chart Container Logic */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%; /* Flexible within grid */
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px; /* Base mobile height */
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        /* CSS Diagrams (No SVG) */
+        .arrow-down {
+            width: 0; 
+            height: 0; 
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #2563EB;
+            margin: 10px auto;
+        }
+
+        .arrow-right {
+            width: 0; 
+            height: 0; 
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-left: 15px solid #2563EB;
+            display: inline-block;
+        }
+        
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+
+    <!-- 
+    NARRATIVE PLAN:
+    1. Header/Intro: High impact title, mission statement.
+    2. The Problem vs Solution: Contextualize the need for SAV.
+    3. The SAV Ecosystem (Diagram): Visualizing the 3 pillars (Docs, Tools/AI, Data).
+    4. Efficiency Metrics (Chart): Comparing manual sales vs SAV.
+    5. The Funnel & Data (Chart): How Meta Ads feed the CRM.
+    6. Growth Trends (Chart): ROI analysis over the operational year.
+    7. Roadmap (Timeline): The journey to official launch.
+    8. Conclusion: Call to action.
+    -->
+
+    <!-- 
+    CHART SELECTION JUSTIFICATION (NO SVG):
+    1. Efficiency Comparison -> Grouped Bar Chart (Chart.js) -> Compare values across categories.
+    2. Sales Funnel -> Horizontal Bar Chart (Chart.js) -> Organizer/Process visualization using Canvas.
+    3. Marketing ROI -> Line Chart (Chart.js) -> Show change over time.
+    4. Satisfaction/Speed -> Doughnut Chart (Chart.js) -> Inform proportion.
+    -->
+</head>
+<body class="text-gray-800">
+
+    <!-- HERO SECTION -->
+    <header class="bg-gradient-to-r from-brand-dark via-brand-blue to-brand-purple text-white py-20 px-4 shadow-xl">
+        <div class="max-w-6xl mx-auto text-center">
+            <h2 class="text-brand-accent font-bold tracking-widest uppercase mb-4 text-sm md:text-base">PotencIA Empresarial</h2>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
+                Datos & Automatización:<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-white">La Nueva Era Empresarial</span>
+            </h1>
+            <p class="text-xl md:text-2xl font-light text-blue-100 max-w-3xl mx-auto">
+                Potenciando empresas con tecnología, marketing y el poder de la Inteligencia Artificial.
+            </p>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT GRID -->
+    <main class="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+
+        <!-- INTRO: VISION & MISSION -->
+        <section class="md:col-span-2 bg-white rounded-2xl shadow-md p-8 border-l-8 border-brand-purple">
+            <h3 class="text-2xl font-bold text-brand-dark mb-4">Nuestra Visión</h3>
+            <p class="text-lg leading-relaxed text-gray-600 mb-6">
+                En un mundo saturado de información, la velocidad y la precisión son moneda de cambio. 
+                <strong>PotencIA Empresarial</strong> no es solo una agencia; es un socio estratégico. 
+                Nuestra misión es clara: estandarizar y potenciar el crecimiento comercial mediante la adopción de herramientas tecnológicas avanzadas.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div class="p-4 bg-blue-50 rounded-lg">
+                    <div class="text-4xl mb-2">🤖</div>
+                    <h4 class="font-bold text-brand-blue">IA & Agentes</h4>
+                    <p class="text-sm">Atención 24/7</p>
+                </div>
+                <div class="p-4 bg-purple-50 rounded-lg">
+                    <div class="text-4xl mb-2">📊</div>
+                    <h4 class="font-bold text-brand-purple">Data Driven</h4>
+                    <p class="text-sm">Decisiones Reales</p>
+                </div>
+                <div class="p-4 bg-amber-50 rounded-lg">
+                    <div class="text-4xl mb-2">🚀</div>
+                    <h4 class="font-bold text-brand-accent">Automatización</h4>
+                    <p class="text-sm">Procesos Óptimos</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: THE SAV SYSTEM (Diagram) -->
+        <section class="md:col-span-2">
+            <div class="mb-6">
+                <h3 class="text-3xl font-bold text-gray-800">El Ecosistema SAV</h3>
+                <p class="text-gray-600 mt-2">
+                    El <strong>Sistema Automatizado de Ventas (SAV)</strong> es nuestro producto estrella. Transformamos el caos comercial en una máquina predecible mediante tres pilares fundamentales.
+                </p>
+            </div>
+            
+            <!-- HTML/CSS Flow Chart (No SVG) -->
+            <div class="bg-white rounded-2xl shadow-md p-8 overflow-hidden">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 relative z-10">
+                    
+                    <!-- Step 1 -->
+                    <div class="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 p-6 rounded-xl w-full card-hover text-center relative">
+                        <div class="text-3xl font-bold text-brand-blue mb-2">1</div>
+                        <h4 class="font-bold text-lg mb-2">Documentación & Procesos</h4>
+                        <p class="text-sm text-gray-500">Estandarización de guiones, objeciones y flujos de venta.</p>
+                    </div>
+
+                    <!-- Connector Desktop -->
+                    <div class="hidden md:block text-brand-blue text-4xl font-bold">→</div>
+                    <!-- Connector Mobile -->
+                    <div class="md:hidden arrow-down"></div>
+
+                    <!-- Step 2 -->
+                    <div class="flex-1 bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 p-6 rounded-xl w-full card-hover text-center relative shadow-lg transform scale-105">
+                        <div class="absolute -top-3 -right-3 bg-brand-accent text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">CORE</div>
+                        <div class="text-3xl font-bold text-brand-blue mb-2">2</div>
+                        <h4 class="font-bold text-lg mb-2">Herramientas & Agentes IA</h4>
+                        <p class="text-sm text-gray-600">Implementación de CRM y Bots inteligentes para atención inmediata.</p>
+                    </div>
+
+                    <!-- Connector Desktop -->
+                    <div class="hidden md:block text-brand-blue text-4xl font-bold">→</div>
+                    <!-- Connector Mobile -->
+                    <div class="md:hidden arrow-down"></div>
+
+                    <!-- Step 3 -->
+                    <div class="flex-1 bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 p-6 rounded-xl w-full card-hover text-center relative">
+                        <div class="text-3xl font-bold text-brand-purple mb-2">3</div>
+                        <h4 class="font-bold text-lg mb-2">Datos & Análisis</h4>
+                        <p class="text-sm text-gray-500">Dashboards en tiempo real para decisiones estratégicas.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHART: MANUAL VS AUTOMATED (Efficiency) -->
+        <section class="md:col-span-1 bg-white rounded-2xl shadow-md p-6 flex flex-col">
+            <div class="mb-4">
+                <h3 class="text-xl font-bold text-brand-dark">Impacto en la Gestión</h3>
+                <p class="text-sm text-gray-500 mt-2">
+                    Comparamos un proceso de ventas tradicional contra la implementación del SAV. La reducción en tiempos de respuesta es crítica para la conversión de leads digitales.
+                </p>
+            </div>
+            <div class="chart-container flex-grow">
+                <canvas id="comparisonChart"></canvas>
+            </div>
+        </section>
+
+        <!-- CHART: SALES FUNNEL (Conversion) -->
+        <section class="md:col-span-1 bg-white rounded-2xl shadow-md p-6 flex flex-col">
+            <div class="mb-4">
+                <h3 class="text-xl font-bold text-brand-dark">El Funnel Inteligente</h3>
+                <p class="text-sm text-gray-500 mt-2">
+                    Integrando Meta Ads con nuestro CRM, filtramos la calidad. No buscamos solo "likes", buscamos ventas cerradas. El SAV cualifica automáticamente.
+                </p>
+            </div>
+            <div class="chart-container flex-grow">
+                <canvas id="funnelChart"></canvas>
+            </div>
+        </section>
+
+        <!-- CHART: GROWTH & ROI (Trend) -->
+        <section class="md:col-span-2 bg-white rounded-2xl shadow-md p-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                <div class="max-w-2xl">
+                    <h3 class="text-2xl font-bold text-brand-dark">Crecimiento Sostenido (Año 1)</h3>
+                    <p class="text-gray-600 mt-2">
+                        Durante nuestro año de operación pre-lanzamiento, hemos optimizado la inversión publicitaria. 
+                        El gráfico muestra cómo el costo de adquisición disminuye mientras los ingresos escalan gracias a la optimización de datos.
+                    </p>
+                </div>
+                <div class="mt-4 md:mt-0 bg-blue-50 px-4 py-2 rounded-lg border border-blue-100">
+                    <span class="block text-xs text-gray-500 uppercase font-bold">ROI Promedio</span>
+                    <span class="block text-2xl font-bold text-brand-blue text-right">350%</span>
+                </div>
+            </div>
+            <div class="chart-container w-full">
+                <canvas id="roiChart"></canvas>
+            </div>
+        </section>
+
+        <!-- TIMELINE SECTION -->
+        <section class="md:col-span-1">
+            <h3 class="text-2xl font-bold text-brand-dark mb-6">Nuestra Trayectoria</h3>
+            <div class="bg-white rounded-2xl shadow-md p-8 relative">
+                <!-- Vertical Line -->
+                <div class="absolute left-10 top-8 bottom-8 w-1 bg-gray-200"></div>
+
+                <!-- Item 1 -->
+                <div class="relative pl-12 mb-8 group">
+                    <div class="absolute left-0 top-1 w-6 h-6 bg-brand-blue rounded-full border-4 border-white shadow-sm z-10"></div>
+                    <span class="text-xs font-bold text-brand-purple bg-purple-50 px-2 py-1 rounded mb-1 inline-block">Inicio</span>
+                    <h4 class="font-bold text-lg">Génesis de PotencIA</h4>
+                    <p class="text-sm text-gray-500">Definición de visión y desarrollo de la arquitectura del SAV.</p>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="relative pl-12 mb-8 group">
+                    <div class="absolute left-0 top-1 w-6 h-6 bg-white border-4 border-brand-blue rounded-full shadow-sm z-10"></div>
+                    <span class="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded mb-1 inline-block">Mes 3-6</span>
+                    <h4 class="font-bold text-lg">Validación & Primeros Clientes</h4>
+                    <p class="text-sm text-gray-500">Implementación beta. Recolección de datos y testimonios clave.</p>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="relative pl-12 mb-8 group">
+                    <div class="absolute left-0 top-1 w-6 h-6 bg-white border-4 border-brand-blue rounded-full shadow-sm z-10"></div>
+                    <span class="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded mb-1 inline-block">Mes 9-11</span>
+                    <h4 class="font-bold text-lg">Optimización con IA</h4>
+                    <p class="text-sm text-gray-500">Integración profunda de Agentes de IA y analítica predictiva.</p>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="relative pl-12 group">
+                    <div class="absolute left-0 top-1 w-6 h-6 bg-brand-accent rounded-full border-4 border-white shadow-lg z-10 animate-pulse"></div>
+                    <span class="text-xs font-bold text-brand-accent bg-amber-50 px-2 py-1 rounded mb-1 inline-block">HOY</span>
+                    <h4 class="font-bold text-lg">Lanzamiento Oficial</h4>
+                    <p class="text-sm text-gray-500">Presentamos el SAV maduro al mercado global.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- KPI SUMMARY -->
+        <section class="md:col-span-1 flex flex-col gap-6">
+            <h3 class="text-2xl font-bold text-brand-dark mb-0">Resultados Clave</h3>
+            
+            <div class="bg-brand-blue text-white rounded-2xl shadow-lg p-6 flex items-center justify-between transform transition hover:scale-105">
+                <div>
+                    <p class="text-blue-200 text-sm font-semibold uppercase">Tasa de Respuesta</p>
+                    <p class="text-3xl font-bold">Inmediata</p>
+                    <p class="text-xs text-blue-100 mt-1">Con Agentes IA (vs 4h promedio humano)</p>
+                </div>
+                <div class="text-4xl opacity-50">⚡</div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col justify-center h-full">
+                 <div class="mb-2">
+                    <h4 class="font-bold text-gray-700">Satisfacción del Cliente</h4>
+                    <p class="text-xs text-gray-400">Basado en encuestas post-venta</p>
+                 </div>
+                 <div class="chart-container h-48 md:h-56">
+                    <canvas id="satisfactionChart"></canvas>
+                 </div>
+            </div>
+        </section>
+
+        <!-- FOOTER / CTA -->
+        <footer class="md:col-span-2 bg-gray-900 text-white rounded-2xl p-10 text-center mt-8">
+            <h2 class="text-3xl font-bold mb-4">¿Listo para potenciar tu empresa?</h2>
+            <p class="text-gray-400 mb-8 max-w-2xl mx-auto">
+                Deja de perder leads por falta de gestión. Adopta el Sistema Automatizado de Ventas y entra en la nueva era de los datos.
+            </p>
+            <button class="bg-brand-accent hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:-translate-y-1">
+                Agenda una Demo del SAV
+            </button>
+            <div class="mt-8 pt-8 border-t border-gray-800 text-sm text-gray-500">
+                &copy; 2024 PotencIA Empresarial. Todos los derechos reservados.
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- CHART.JS CONFIGURATION -->
+    <script>
+        // --- HELPER: LABEL WRAPPING (16 CHAR LIMIT) ---
+        function splitLabel(label) {
+            if (label.length <= 16) return label;
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = words[0];
+
+            for (let i = 1; i < words.length; i++) {
+                if (currentLine.length + 1 + words[i].length <= 16) {
+                    currentLine += ' ' + words[i];
+                } else {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+
+        // --- GLOBAL CHART DEFAULTS ---
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = '#4B5563';
+        
+        // --- TOOLTIP CONFIGURATION (MANDATORY) ---
+        const commonTooltip = {
+            callbacks: {
+                title: function(tooltipItems) {
+                    const item = tooltipItems[0];
+                    let label = item.chart.data.labels[item.dataIndex];
+                    if (Array.isArray(label)) {
+                        return label.join(' ');
+                    } else {
+                        return label;
+                    }
+                }
+            }
+        };
+
+        // 1. COMPARISON CHART (Bar)
+        const ctxComp = document.getElementById('comparisonChart').getContext('2d');
+        new Chart(ctxComp, {
+            type: 'bar',
+            data: {
+                labels: ['Tiempo Respuesta (Min)', 'Leads Perdidos (%)', 'Conversión Final (%)'].map(splitLabel),
+                datasets: [
+                    {
+                        label: 'Proceso Manual',
+                        data: [240, 65, 2], // 240 mins (4 hours), 65% loss, 2% conversion
+                        backgroundColor: '#9CA3AF', // Gray
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Sistema SAV (IA)',
+                        data: [1, 15, 8], // 1 min, 15% loss, 8% conversion
+                        backgroundColor: '#2563EB', // Brand Blue
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: commonTooltip
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // 2. FUNNEL CHART (Horizontal Bar simulation)
+        const ctxFunnel = document.getElementById('funnelChart').getContext('2d');
+        new Chart(ctxFunnel, {
+            type: 'bar',
+            indexAxis: 'y', // Horizontal
+            data: {
+                labels: ['Impresiones (Ads)', 'Clics en Anuncio', 'Leads Capturados', 'Leads Calificados', 'Ventas Cerradas'].map(splitLabel),
+                datasets: [{
+                    label: 'Flujo de Conversión',
+                    data: [10000, 2500, 800, 350, 120],
+                    backgroundColor: [
+                        'rgba(37, 99, 235, 0.2)', // Lightest Blue
+                        'rgba(37, 99, 235, 0.4)',
+                        'rgba(37, 99, 235, 0.6)',
+                        'rgba(37, 99, 235, 0.8)',
+                        '#F59E0B' // Amber for Sales (The Goal)
+                    ],
+                    borderColor: '#2563EB',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: commonTooltip
+                },
+                scales: {
+                    x: { display: false }, // Hide axis for cleaner funnel look
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 3. ROI CHART (Line/Area)
+        const ctxRoi = document.getElementById('roiChart').getContext('2d');
+        new Chart(ctxRoi, {
+            type: 'line',
+            data: {
+                labels: ['Q1: Inicio', 'Q2: Ajuste', 'Q3: Estandarización', 'Q4: Automatización'].map(splitLabel),
+                datasets: [
+                    {
+                        label: 'Ingresos Generados',
+                        data: [1200, 3500, 6800, 12500],
+                        borderColor: '#7C3AED', // Purple
+                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3
+                    },
+                    {
+                        label: 'Costo por Lead',
+                        data: [50, 45, 30, 18], // Cost goes down
+                        borderColor: '#F59E0B', // Amber
+                        backgroundColor: 'transparent',
+                        borderDash: [5, 5],
+                        yAxisID: 'y1',
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    tooltip: commonTooltip,
+                    legend: { position: 'top' }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: { display: true, text: 'Ingresos ($)' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: { drawOnChartArea: false },
+                        title: { display: true, text: 'CPL ($)' }
+                    }
+                }
+            }
+        });
+
+        // 4. SATISFACTION CHART (Doughnut)
+        const ctxSat = document.getElementById('satisfactionChart').getContext('2d');
+        new Chart(ctxSat, {
+            type: 'doughnut',
+            data: {
+                labels: ['Muy Satisfecho', 'Satisfecho', 'Neutral'].map(splitLabel),
+                datasets: [{
+                    data: [85, 12, 3],
+                    backgroundColor: [
+                        '#2563EB', // Blue
+                        '#7C3AED', // Purple
+                        '#E5E7EB'  // Gray
+                    ],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: commonTooltip,
+                    legend: { position: 'right' }
+                },
+                cutout: '70%'
+            }
+        });
+
+    </script>
+</body>
+</html>
