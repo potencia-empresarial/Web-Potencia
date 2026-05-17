@@ -1,0 +1,24 @@
+# Secretos — NUNCA subir al repositorio
+.env
+*.env
+.env.local
+.env.production
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+venv/
+env/
+.venv/
+
+# macOS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Node (si se usa)
+node_modules/

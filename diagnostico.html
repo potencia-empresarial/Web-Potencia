@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagnóstico IA | PotencIA Empresarial</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0D1B2A',
+              teal: '#004F5F',
+              yellow: '#FECD1A',
+              light: '#F2F2F2'
+            }
+          },
+          fontFamily: {
+            heading: ['Poppins', 'sans-serif'],
+            body: ['Helvetica', 'Arial', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&display=swap');
+    body {
+      font-family: 'Helvetica', 'Arial', sans-serif;
+      font-weight: 300;
+      background-color: #F2F2F2;
+      color: #0D1B2A;
+    }
+    h1, h2, h3, h4, h5, h6 { font-family: 'Poppins', sans-serif; font-weight: 700; }
+
+    .step { display: none; }
+    .step.active { display: block; }
+
+    .opcion-card input[type="radio"],
+    .opcion-card input[type="checkbox"] { display: none; }
+    .opcion-card label {
+      display: block; cursor: pointer; border: 2px solid #E5E7EB;
+      border-radius: 12px; padding: 12px 16px;
+      transition: all 0.2s ease; background: white;
+    }
+    .opcion-card:has(input:checked) label {
+      border-color: #004F5F; background: #EFF6FF; color: #0D1B2A; font-weight: 600;
+    }
+    .opcion-card label:hover { border-color: #93C5FD; }
+
+    .progress-bar { transition: width 0.4s ease; }
+
+    .score-ring {
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+
+    .oportunidad-card {
+      border-left: 4px solid #004F5F;
+      transition: transform 0.2s;
+    }
+    .oportunidad-card:hover { transform: translateX(4px); }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn 0.5s ease forwards; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spin { animation: spin 1s linear infinite; }
+
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white; }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-r from-brand-navy via-brand-teal to-brand-teal text-white py-10 px-4 shadow-xl">
+    <div class="max-w-3xl mx-auto text-center">
+      <p class="text-brand-yellow font-bold tracking-widest uppercase text-sm mb-3">PotencIA Empresarial</p>
+      <h1 class="text-3xl md:text-5xl font-extrabold mb-4 leading-tight">
+        Diagnóstico de Madurez IA
+      </h1>
+      <p class="text-brand-light text-lg font-light max-w-xl mx-auto">
+        Descubre en 3 minutos qué tan preparada está tu empresa para la era de la inteligencia artificial y cuáles son tus mayores oportunidades de crecimiento.
+      </p>
+    </div>
+  </header>
+
+  <!-- FORMULARIO -->
+  <main id="formSection" class="max-w-3xl mx-auto px-4 py-10">
+
+    <!-- BARRA DE PROGRESO -->
+    <div class="mb-8 no-print">
+      <div class="flex justify-between text-sm text-gray-500 mb-2">
+        <span id="stepLabel">Paso 1 de 5</span>
+        <span id="stepPct">20%</span>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-2">
+        <div id="progressBar" class="progress-bar bg-brand-teal h-2 rounded-full" style="width: 20%"></div>
+      </div>
+    </div>
+
+    <form id="diagnosticoForm">
+
+      <!-- PASO 1: TU EMPRESA -->
+      <div class="step active bg-white rounded-2xl shadow-md p-8" id="paso1">
+        <h2 class="text-2xl font-bold text-brand-navy mb-2">Tu Empresa</h2>
+        <p class="text-gray-500 mb-6 text-sm">Cuéntanos lo básico. Esto nos permite personalizar tu diagnóstico.</p>
+
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Nombre de la empresa *</label>
+            <input type="text" name="empresa" required placeholder="Ej: Distribuidora López S.A.S."
+              class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-teal transition">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Industria / Sector *</label>
+            <select name="industria" required class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-teal transition bg-white">
+              <option value="">Selecciona tu sector...</option>
+              <option>Comercio y Retail</option>
+              <option>Salud y Bienestar</option>
+              <option>Educación y Capacitación</option>
+              <option>Construcción e Inmobiliaria</option>
+              <option>Alimentos y Restaurantes</option>
+              <option>Servicios Profesionales</option>
+              <option>Manufactura e Industria</option>
+              <option>Tecnología y Software</option>
+              <option>Logística y Transporte</option>
+              <option>Turismo y Hospitalidad</option>
+              <option>Financiero y Seguros</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Número de empleados *</label>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="opcion-card"><label><input type="radio" name="empleados" value="1-5" required> 1 – 5 empleados</label></div>
+              <div class="opcion-card"><label><input type="radio" name="empleados" value="6-20"> 6 – 20 empleados</label></div>
+              <div class="opcion-card"><label><input type="radio" name="empleados" value="21-50"> 21 – 50 empleados</label></div>
+              <div class="opcion-card"><label><input type="radio" name="empleados" value="51-100"> 51 – 100 empleados</label></div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Facturación mensual aproximada *</label>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="opcion-card"><label><input type="radio" name="facturacion" value="Menos de $10M" required> Menos de $10M</label></div>
+              <div class="opcion-card"><label><input type="radio" name="facturacion" value="$10M - $50M"> $10M – $50M</label></div>
+              <div class="opcion-card"><label><input type="radio" name="facturacion" value="$50M - $200M"> $50M – $200M</label></div>
+              <div class="opcion-card"><label><input type="radio" name="facturacion" value="Más de $200M"> Más de $200M</label></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASO 2: PRESENCIA DIGITAL -->
+      <div class="step bg-white rounded-2xl shadow-md p-8" id="paso2">
+        <h2 class="text-2xl font-bold text-brand-navy mb-2">Presencia Digital</h2>
+        <p class="text-gray-500 mb-6 text-sm">¿Cómo está tu empresa en el mundo digital hoy?</p>
+
+        <div class="space-y-6">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">¿Tu empresa tiene página web? *</label>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="opcion-card"><label><input type="radio" name="tienePaginaWeb" value="Sí, activa y actualizada" required> ✅ Sí, activa y actualizada</label></div>
+              <div class="opcion-card"><label><input type="radio" name="tienePaginaWeb" value="Sí, pero desactualizada"> ⚠️ Sí, pero desactualizada</label></div>
+              <div class="opcion-card"><label><input type="radio" name="tienePaginaWeb" value="No, pero planeamos crearla"> 🔜 No, pero planeamos crearla</label></div>
+              <div class="opcion-card"><label><input type="radio" name="tienePaginaWeb" value="No tenemos web"> ❌ No tenemos web</label></div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Redes sociales activas (selecciona todas)</label>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="opcion-card"><label><input type="checkbox" name="redesSociales" value="Instagram"> 📸 Instagram</label></div>
+              <div class="opcion-card"><label><input type="checkbox" name="redesSociales" value="Facebook"> 👥 Facebook</label></div>
+              <div class="opcion-card"><label><input type="checkbox" name="redesSociales" value="LinkedIn"> 💼 LinkedIn</label></div>
+              <div class="opcion-card"><label><input type="checkbox" name="redesSociales" value="TikTok"> 🎵 TikTok</label></div>
+              <div class="opcion-card"><label><input type="checkbox" name="redesSociales" value="YouTube"> ▶️ YouTube</label></div>
+              <div class="opcion-card"><label><input type="checkbox" name="redesSociales" value="Ninguna"> ❌ Ninguna</label></div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Herramientas de gestión que usas actualmente</label>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="opcion-card"><label><input type="checkbox" name="herramientas" value="CRM (HubSpot, Salesforce, etc.)"> 📇 CRM</label></div>
+              <div class="opcion-card"><label><input type="checkbox" name="herramientas" value="ERP (SAP, Siigo, etc.)"> 🏭 ERP</label></div>
+              <div class="opcion-card"><label><input type="checkbox" name="herramientas" value="Hojas de cálculo (Excel/Sheets)"> 📊 Excel / Sheets</label></div>
+              <div class="opcion-card"><label><input type="checkbox" name="herramientas" value="WhatsApp Business"> 💬 WhatsApp Business</label></div>
+              <div class="opcion-card"><label><input type="checkbox" name="herramientas" value="Herramientas de email marketing"> 📧 Email Marketing</label></div>
+              <div class="opcion-card"><label><input type="checkbox" name="herramientas" value="Ninguna herramienta de gestión"> ❌ Ninguna</label></div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">¿Cómo gestionas los leads o clientes potenciales? *</label>
+            <div class="space-y-2">
+              <div class="opcion-card"><label><input type="radio" name="gestionLeads" value="CRM automatizado" required> Sistema CRM automatizado</label></div>
+              <div class="opcion-card"><label><input type="radio" name="gestionLeads" value="Hojas de cálculo manuales"> Hojas de cálculo manuales</label></div>
+              <div class="opcion-card"><label><input type="radio" name="gestionLeads" value="WhatsApp y libreta de notas"> WhatsApp y notas personales</label></div>
+              <div class="opcion-card"><label><input type="radio" name="gestionLeads" value="No tenemos proceso definido"> No tenemos proceso definido</label></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASO 3: OPERACIONES -->
+      <div class="step bg-white rounded-2xl shadow-md p-8" id="paso3">
+        <h2 class="text-2xl font-bold text-brand-navy mb-2">Operaciones Internas</h2>
+        <p class="text-gray-500 mb-6 text-sm">El tiempo que pierdes en tareas manuales es la mayor oportunidad de automatización.</p>
+
+        <div class="space-y-6">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">¿Cuántas horas semanales invierte tu equipo en tareas repetitivas? *</label>
+            <div class="space-y-2">
+              <div class="opcion-card"><label><input type="radio" name="horasManuales" value="Menos de 5 horas" required> Menos de 5 horas — casi todo está automatizado</label></div>
+              <div class="opcion-card"><label><input type="radio" name="horasManuales" value="5 a 15 horas"> 5 a 15 horas — algo de carga manual</label></div>
+              <div class="opcion-card"><label><input type="radio" name="horasManuales" value="15 a 30 horas"> 15 a 30 horas — significativa carga operativa</label></div>
+              <div class="opcion-card"><label><input type="radio" name="horasManuales" value="Más de 30 horas"> Más de 30 horas — operación muy manual</label></div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">¿Cuáles son tus procesos más manuales? (selecciona todos)</label>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="opcion-card"><label><input type="checkbox" name="procesosManuales" value="Seguimiento de ventas y clientes"> 📞 Seguimiento de ventas</label></div>
+              <div class="opcion-card"><label><input type="checkbox" name="procesosManuales" value="Facturación y cobros"> 🧾 Facturación y cobros</label></div>
+              <div class="opcion-card"><label><input type="checkbox" name="procesosManuales" value="Reportes y análisis de datos"> 📈 Reportes y análisis</label></div>
+              <div class="opcion-card"><label><input type="checkbox" name="procesosManuales" value="Atención al cliente"> 💬 Atención al cliente</label></div>
+              <div class="opcion-card"><label><input type="checkbox" name="procesosManuales" value="Inventario y logística"> 📦 Inventario y logística</label></div>
+              <div class="opcion-card"><label><input type="checkbox" name="procesosManuales" value="Recursos humanos y nómina"> 👥 RRHH y nómina</label></div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">¿Tienes algún proceso automatizado actualmente? *</label>
+            <div class="space-y-2">
+              <div class="opcion-card"><label><input type="radio" name="tieneAutomatizaciones" value="Sí, varios procesos automatizados" required> Sí, varios procesos están automatizados</label></div>
+              <div class="opcion-card"><label><input type="radio" name="tieneAutomatizaciones" value="Sí, uno o dos procesos básicos"> Sí, uno o dos procesos básicos</label></div>
+              <div class="opcion-card"><label><input type="radio" name="tieneAutomatizaciones" value="No, todo es manual"> No, todo se hace manualmente</label></div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Si tienes automatizaciones, ¿cuáles? (opcional)</label>
+            <textarea name="descripcionAutomatizaciones" rows="2" placeholder="Ej: Envío automático de confirmaciones por email, recordatorios de pago..."
+              class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-teal transition resize-none"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASO 4: MARKETING Y VENTAS -->
+      <div class="step bg-white rounded-2xl shadow-md p-8" id="paso4">
+        <h2 class="text-2xl font-bold text-brand-navy mb-2">Marketing y Ventas</h2>
+        <p class="text-gray-500 mb-6 text-sm">Entender cómo vendes hoy nos permite identificar dónde la IA multiplica tus resultados.</p>
+
+        <div class="space-y-6">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">¿Inviertes en publicidad digital? *</label>
+            <div class="space-y-2">
+              <div class="opcion-card"><label><input type="radio" name="tienePublicidad" value="Sí, activamente con presupuesto definido" required> Sí, activamente con presupuesto definido</label></div>
+              <div class="opcion-card"><label><input type="radio" name="tienePublicidad" value="Sí, de forma esporádica"> Sí, de forma esporádica</label></div>
+              <div class="opcion-card"><label><input type="radio" name="tienePublicidad" value="No, solo orgánico"> No, solo crecimiento orgánico</label></div>
+              <div class="opcion-card"><label><input type="radio" name="tienePublicidad" value="No hacemos marketing digital"> No hacemos marketing digital</label></div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Presupuesto mensual en marketing *</label>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="opcion-card"><label><input type="radio" name="presupuestoMarketing" value="Menos de $500K" required> Menos de $500K</label></div>
+              <div class="opcion-card"><label><input type="radio" name="presupuestoMarketing" value="$500K - $2M"> $500K – $2M</label></div>
+              <div class="opcion-card"><label><input type="radio" name="presupuestoMarketing" value="$2M - $10M"> $2M – $10M</label></div>
+              <div class="opcion-card"><label><input type="radio" name="presupuestoMarketing" value="Más de $10M"> Más de $10M</label></div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">¿Cómo mides los resultados de ventas? *</label>
+            <div class="space-y-2">
+              <div class="opcion-card"><label><input type="radio" name="mideResultados" value="Dashboard en tiempo real con KPIs" required> Dashboard en tiempo real con KPIs definidos</label></div>
+              <div class="opcion-card"><label><input type="radio" name="mideResultados" value="Reportes manuales periódicos"> Reportes manuales (semanal o mensual)</label></div>
+              <div class="opcion-card"><label><input type="radio" name="mideResultados" value="De memoria o intuición"> De memoria o intuición del equipo</label></div>
+              <div class="opcion-card"><label><input type="radio" name="mideResultados" value="No medimos resultados formalmente"> No medimos resultados formalmente</label></div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Canal principal de ventas *</label>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="opcion-card"><label><input type="radio" name="canalVentas" value="Tienda física o presencial" required> 🏪 Tienda física</label></div>
+              <div class="opcion-card"><label><input type="radio" name="canalVentas" value="E-commerce o tienda online"> 🛒 E-commerce</label></div>
+              <div class="opcion-card"><label><input type="radio" name="canalVentas" value="Fuerza de ventas (vendedores)"> 👤 Fuerza de ventas</label></div>
+              <div class="opcion-card"><label><input type="radio" name="canalVentas" value="WhatsApp y redes sociales"> 💬 WhatsApp / Redes</label></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASO 5: METAS Y CONTACTO -->
+      <div class="step bg-white rounded-2xl shadow-md p-8" id="paso5">
+        <h2 class="text-2xl font-bold text-brand-navy mb-2">Metas y Contacto</h2>
+        <p class="text-gray-500 mb-6 text-sm">Último paso. Aquí recibimos tu reporte personalizado.</p>
+
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">¿Cuál es tu objetivo principal este año? *</label>
+            <div class="space-y-2">
+              <div class="opcion-card"><label><input type="radio" name="objetivo" value="Aumentar ventas e ingresos" required> 📈 Aumentar ventas e ingresos</label></div>
+              <div class="opcion-card"><label><input type="radio" name="objetivo" value="Reducir costos operativos"> 💰 Reducir costos operativos</label></div>
+              <div class="opcion-card"><label><input type="radio" name="objetivo" value="Mejorar la experiencia del cliente"> ⭐ Mejorar la experiencia del cliente</label></div>
+              <div class="opcion-card"><label><input type="radio" name="objetivo" value="Escalar operaciones sin aumentar equipo"> 🚀 Escalar sin aumentar equipo</label></div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">¿Cuál es tu mayor desafío actual? *</label>
+            <textarea name="desafio" required rows="3" placeholder="Ej: No tenemos claridad sobre qué métricas seguir. El equipo de ventas pierde muchos leads por falta de seguimiento a tiempo..."
+              class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-teal transition resize-none"></textarea>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Tu nombre *</label>
+              <input type="text" name="nombre" required placeholder="Nombre del representante"
+                class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-teal transition">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Correo electrónico *</label>
+              <input type="email" name="correo" required placeholder="correo@empresa.com"
+                class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-teal transition">
+            </div>
+          </div>
+
+          <div class="bg-brand-light border border-brand-teal rounded-xl p-4 text-sm text-brand-navy">
+            🔒 Tu información es confidencial y solo se usa para generar tu diagnóstico personalizado.
+          </div>
+        </div>
+      </div>
+
+      <!-- NAVEGACIÓN -->
+      <div class="flex justify-between mt-6 no-print">
+        <button type="button" id="btnAnterior" onclick="cambiarPaso(-1)"
+          class="hidden px-6 py-3 border-2 border-gray-300 text-gray-600 rounded-xl font-semibold hover:border-brand-teal hover:text-brand-teal transition">
+          ← Anterior
+        </button>
+        <div class="flex-1"></div>
+        <button type="button" id="btnSiguiente" onclick="cambiarPaso(1)"
+          class="px-8 py-3 bg-brand-teal text-white rounded-xl font-semibold hover:bg-brand-navy transition shadow-md">
+          Siguiente →
+        </button>
+        <button type="submit" id="btnEnviar"
+          class="hidden px-8 py-3 bg-brand-yellow text-brand-navy rounded-xl font-bold hover:bg-yellow-300 transition shadow-md">
+          Generar mi Diagnóstico ✨
+        </button>
+      </div>
+
+    </form>
+
+    <!-- ESTADO: CARGANDO -->
+    <div id="loadingSection" class="hidden text-center py-20">
+      <div class="inline-block w-16 h-16 border-4 border-brand-teal border-t-transparent rounded-full spin mb-6"></div>
+      <h3 class="text-2xl font-bold text-brand-navy mb-2">Analizando tu empresa...</h3>
+      <p class="text-gray-500">La IA está procesando tu diagnóstico y generando recomendaciones personalizadas.</p>
+    </div>
+
+  </main>
+
+  <!-- REPORTE GENERADO -->
+  <div id="reporteSection" class="hidden max-w-4xl mx-auto px-4 py-10">
+
+    <!-- BOTÓN DESCARGAR -->
+    <div class="flex justify-between items-center mb-6 no-print">
+      <button onclick="reiniciar()"
+        class="px-5 py-2 border-2 border-gray-300 text-gray-600 rounded-xl font-semibold hover:border-brand-teal hover:text-brand-teal transition text-sm">
+        ← Nuevo Diagnóstico
+      </button>
+      <button onclick="descargarPDF()"
+        class="px-6 py-3 bg-brand-yellow text-brand-navy rounded-xl font-bold hover:bg-yellow-300 transition shadow-md flex items-center gap-2">
+        📥 Descargar Reporte PDF
+      </button>
+    </div>
+
+    <!-- CONTENIDO DEL REPORTE (se convierte a PDF) -->
+    <div id="reporteContenido">
+
+      <!-- PORTADA -->
+      <div class="bg-gradient-to-br from-brand-navy via-brand-teal to-brand-teal text-white rounded-2xl p-10 mb-6 fade-in">
+        <div class="flex justify-between items-start flex-wrap gap-4">
+          <div>
+            <p class="text-brand-yellow font-bold tracking-widest uppercase text-xs mb-3">PotencIA Empresarial</p>
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-2">Diagnóstico de Madurez IA</h1>
+            <p id="rptEmpresa" class="text-brand-light text-lg"></p>
+            <p id="rptFecha" class="text-brand-yellow text-sm mt-1"></p>
+          </div>
+          <!-- SCORE CIRCLE -->
+          <div class="text-center">
+            <div id="scoreCircle" class="score-ring bg-white/10 border-4 border-brand-yellow mx-auto mb-2">
+              <div>
+                <div id="scoreNum" class="text-5xl font-extrabold text-white"></div>
+                <div class="text-brand-light text-xs font-semibold">/100</div>
+              </div>
+            </div>
+            <p id="scoreNivel" class="text-brand-yellow font-bold text-sm"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- DESCRIPCIÓN DE NIVEL -->
+      <div class="bg-white rounded-2xl shadow-md p-6 mb-6 border-l-8 border-brand-yellow fade-in">
+        <h2 class="text-xl font-bold text-brand-navy mb-2">Estado Actual de tu Empresa</h2>
+        <p id="rptDescripcion" class="text-gray-600 leading-relaxed"></p>
+      </div>
+
+      <!-- SCORE DETALLE -->
+      <div class="bg-white rounded-2xl shadow-md p-6 mb-6 fade-in">
+        <h2 class="text-xl font-bold text-brand-navy mb-4">Análisis por Dimensión</h2>
+        <div id="rptScoreDetalle" class="grid grid-cols-2 gap-4"></div>
+      </div>
+
+      <!-- FORTALEZAS -->
+      <div class="bg-white rounded-2xl shadow-md p-6 mb-6 fade-in">
+        <h2 class="text-xl font-bold text-brand-navy mb-4">✅ Fortalezas Detectadas</h2>
+        <ul id="rptFortalezas" class="space-y-2"></ul>
+      </div>
+
+      <!-- OPORTUNIDADES -->
+      <div class="bg-white rounded-2xl shadow-md p-6 mb-6 fade-in">
+        <h2 class="text-xl font-bold text-brand-navy mb-4">🚀 Top 3 Oportunidades de IA</h2>
+        <p class="text-gray-500 text-sm mb-4">Priorizadas por impacto y velocidad de implementación para tu empresa.</p>
+        <div id="rptOportunidades" class="space-y-4"></div>
+      </div>
+
+      <!-- PLAN DE ACCIÓN -->
+      <div class="bg-white rounded-2xl shadow-md p-6 mb-6 fade-in">
+        <h2 class="text-xl font-bold text-brand-navy mb-4">📅 Plan de Acción — 90 Días</h2>
+        <div id="rptPlan" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+      </div>
+
+      <!-- MENSAJE FINAL + CTA -->
+      <div class="bg-gradient-to-r from-brand-navy to-brand-teal text-white rounded-2xl p-8 text-center fade-in">
+        <p class="text-brand-yellow font-bold tracking-widest uppercase text-xs mb-4">PotencIA Empresarial</p>
+        <p id="rptMensajeFinal" class="text-brand-light text-lg mb-6 leading-relaxed max-w-2xl mx-auto"></p>
+        <div class="no-print">
+          <a href="index.html"
+            class="inline-block bg-brand-yellow hover:bg-yellow-300 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300">
+            Agenda una consultoría con nosotros →
+          </a>
+        </div>
+        <p class="text-brand-yellow text-xs mt-6">© 2025 PotencIA Empresarial · potenciaempresarial.com</p>
+      </div>
+
+    </div><!-- fin reporteContenido -->
+  </div><!-- fin reporteSection -->
+
+  <script>
+    let pasoActual = 1;
+    const totalPasos = 5;
+
+    function cambiarPaso(direccion) {
+      const pasoEl = document.getElementById(`paso${pasoActual}`);
+
+      // Validar campos requeridos del paso actual
+      if (direccion === 1) {
+        const requeridos = pasoEl.querySelectorAll('[required]');
+        for (const campo of requeridos) {
+          if (campo.type === 'radio') {
+            const grupo = pasoEl.querySelectorAll(`[name="${campo.name}"]`);
+            const marcado = [...grupo].some(r => r.checked);
+            if (!marcado) {
+              campo.closest('.opcion-card')?.parentElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              mostrarError(campo.name);
+              return;
+            }
+          } else if (!campo.value.trim()) {
+            campo.focus();
+            campo.classList.add('border-red-400');
+            setTimeout(() => campo.classList.remove('border-red-400'), 2000);
+            return;
+          }
+        }
+      }
+
+      pasoEl.classList.remove('active');
+      pasoActual += direccion;
+      document.getElementById(`paso${pasoActual}`).classList.add('active');
+      actualizarNav();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function mostrarError(nombre) {
+      const existente = document.getElementById('errorMsg');
+      if (existente) existente.remove();
+      const msg = document.createElement('p');
+      msg.id = 'errorMsg';
+      msg.className = 'text-red-500 text-sm mt-2 text-center';
+      msg.textContent = 'Por favor selecciona una opción para continuar.';
+      document.querySelector('.flex.justify-between.mt-6')?.before(msg);
+      setTimeout(() => msg.remove(), 3000);
+    }
+
+    function actualizarNav() {
+      const pct = Math.round((pasoActual / totalPasos) * 100);
+      document.getElementById('progressBar').style.width = pct + '%';
+      document.getElementById('stepLabel').textContent = `Paso ${pasoActual} de ${totalPasos}`;
+      document.getElementById('stepPct').textContent = pct + '%';
+
+      document.getElementById('btnAnterior').classList.toggle('hidden', pasoActual === 1);
+      document.getElementById('btnSiguiente').classList.toggle('hidden', pasoActual === totalPasos);
+      document.getElementById('btnEnviar').classList.toggle('hidden', pasoActual !== totalPasos);
+    }
+
+    document.getElementById('diagnosticoForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const fd = new FormData(this);
+      const datos = {};
+      for (const [k, v] of fd.entries()) {
+        if (datos[k]) {
+          datos[k] = Array.isArray(datos[k]) ? [...datos[k], v] : [datos[k], v];
+        } else {
+          datos[k] = v;
+        }
+      }
+      // checkboxes que no se marcaron → array vacío
+      ['redesSociales', 'herramientas', 'procesosManuales'].forEach(k => {
+        if (!datos[k]) datos[k] = [];
+        if (!Array.isArray(datos[k])) datos[k] = [datos[k]];
+      });
+
+      document.getElementById('formSection').classList.add('hidden');
+      document.getElementById('loadingSection').classList.remove('hidden');
+      document.getElementById('loadingSection').classList.remove('hidden');
+      document.getElementById('loadingSection').parentElement.classList.remove('hidden');
+
+      try {
+        const res = await fetch('/api/diagnostico', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(datos)
+        });
+        const json = await res.json();
+        if (!json.ok) throw new Error(json.error);
+        renderReporte(json.resultado, datos);
+      } catch (err) {
+        document.getElementById('loadingSection').classList.add('hidden');
+        document.getElementById('formSection').classList.remove('hidden');
+        alert('Ocurrió un error: ' + err.message);
+      }
+    });
+
+    function renderReporte(r, datos) {
+      document.getElementById('loadingSection').classList.add('hidden');
+      document.getElementById('formSection').classList.add('hidden');
+
+      // Datos básicos
+      document.getElementById('rptEmpresa').textContent = datos.empresa + ' · ' + datos.industria;
+      document.getElementById('rptFecha').textContent = 'Generado el ' + new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById('scoreNum').textContent = r.score;
+      document.getElementById('scoreNivel').textContent = r.nivel;
+      document.getElementById('rptDescripcion').textContent = r.descripcionNivel;
+
+      // Score por dimensión
+      const dimensiones = [
+        { key: 'presenciaDigital', label: 'Presencia Digital', max: 25, color: 'blue' },
+        { key: 'automatizacion', label: 'Automatización', max: 25, color: 'purple' },
+        { key: 'datosDecisiones', label: 'Datos & Decisiones', max: 25, color: 'amber' },
+        { key: 'marketingIA', label: 'Marketing IA', max: 25, color: 'blue' },
+      ];
+      const colores = { blue: '#004F5F', purple: '#004F5F', amber: '#FECD1A' };
+      document.getElementById('rptScoreDetalle').innerHTML = dimensiones.map(d => {
+        const val = r.scoreDetalle[d.key] || 0;
+        const pct = Math.round((val / d.max) * 100);
+        const col = colores[d.color];
+        return `<div class="p-4 bg-gray-50 rounded-xl">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm font-semibold text-gray-700">${d.label}</span>
+            <span class="text-sm font-bold" style="color:${col}">${val}/${d.max}</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-2">
+            <div class="h-2 rounded-full" style="width:${pct}%;background:${col}"></div>
+          </div>
+        </div>`;
+      }).join('');
+
+      // Fortalezas
+      document.getElementById('rptFortalezas').innerHTML = (r.fortalezas || []).map(f =>
+        `<li class="flex items-start gap-2 text-gray-700"><span class="text-green-500 mt-0.5">✓</span><span>${f}</span></li>`
+      ).join('');
+
+      // Oportunidades
+      const impactoColor = { 'Alto': '#004F5F', 'Medio': '#004F5F' };
+      document.getElementById('rptOportunidades').innerHTML = (r.oportunidades || []).map((op, i) => `
+        <div class="oportunidad-card bg-gray-50 rounded-xl p-5 pl-5">
+          <div class="flex items-start justify-between gap-4 flex-wrap">
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-xs font-bold text-white px-2 py-0.5 rounded-full" style="background:${impactoColor[op.impacto] || '#004F5F'}">Impacto ${op.impacto}</span>
+                <span class="text-xs text-gray-400">${op.plazo}</span>
+              </div>
+              <h3 class="font-bold text-brand-navy text-lg mb-1">${i + 1}. ${op.titulo}</h3>
+              <p class="text-gray-600 text-sm mb-2">${op.descripcion}</p>
+              <p class="text-sm font-semibold text-green-700">💰 ROI estimado: ${op.roiEstimado}</p>
+              ${op.herramientasSugeridas?.length ? `<p class="text-xs text-gray-400 mt-1">Herramientas: ${op.herramientasSugeridas.join(', ')}</p>` : ''}
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // Plan 90 días
+      const meses = [
+        { key: 'mes1', num: '1', bg: 'bg-brand-light', border: 'border-brand-teal' },
+        { key: 'mes2', num: '2', bg: 'bg-brand-light', border: 'border-brand-teal' },
+        { key: 'mes3', num: '3', bg: 'bg-brand-light', border: 'border-brand-yellow' },
+      ];
+      document.getElementById('rptPlan').innerHTML = meses.map(m => {
+        const mes = r.planAccion?.[m.key] || {};
+        return `<div class="${m.bg} border-t-4 ${m.border} rounded-xl p-4">
+          <p class="text-xs font-bold text-gray-400 uppercase mb-1">Mes ${m.num}</p>
+          <h4 class="font-bold text-brand-navy mb-3">${mes.titulo || ''}</h4>
+          <ul class="space-y-1">
+            ${(mes.acciones || []).map(a => `<li class="text-sm text-gray-600 flex items-start gap-1"><span class="mt-1">•</span><span>${a}</span></li>`).join('')}
+          </ul>
+        </div>`;
+      }).join('');
+
+      // Mensaje final
+      document.getElementById('rptMensajeFinal').textContent = r.mensajeFinal;
+
+      document.getElementById('reporteSection').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function descargarPDF() {
+      const elemento = document.getElementById('reporteContenido');
+      const empresa = document.getElementById('rptEmpresa').textContent.split('·')[0].trim().replace(/\s+/g, '_');
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: `Diagnostico_IA_${empresa}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(elemento).save();
+    }
+
+    function reiniciar() {
+      document.getElementById('reporteSection').classList.add('hidden');
+      document.getElementById('formSection').classList.remove('hidden');
+      document.getElementById('diagnosticoForm').reset();
+      pasoActual = 1;
+      document.querySelectorAll('.step').forEach((el, i) => el.classList.toggle('active', i === 0));
+      actualizarNav();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+
+</body>
+</html>

@@ -1,528 +1,1076 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta name="facebook-domain-verification" content="zgjv5roifkn4e22wxwcgaraibnbz2w" />
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PotencIA Empresarial | Datos & Automatización</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Palette: Vibrant Tech (Blue/Purple/Amber) 
-         Primary: #2563EB (Blue 600)
-         Secondary: #7C3AED (Violet 600)
-         Accent: #F59E0B (Amber 500)
-    -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            blue: '#2563EB',
-                            dark: '#1E3A8A',
-                            purple: '#7C3AED',
-                            accent: '#F59E0B',
-                            light: '#F3F4F6'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
+  <meta name="facebook-domain-verification" content="zgjv5roifkn4e22wxwcgaraibnbz2w" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PotencIA Empresarial · IA aplicada al crecimiento de negocios reales</title>
+  <meta name="description" content="Implementamos un Sistema Automatizado de Ventas (SAV) en 60 días que responde, califica y convierte cada prospecto en automático. Agencia de IA con marco ISO 9001:2015.">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
+  <!-- Brand Book DOC-M-01 v1.0 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy:   '#0D1B2A',
+              navy2:  '#152538',
+              teal:   '#004F5F',
+              teal2:  '#006B7F',
+              yellow: '#FECD1A',
+              light:  '#F2F2F2'
             }
-        }
-    </script>
-    
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #F3F4F6;
-        }
-
-        /* Chart Container Logic */
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 100%; /* Flexible within grid */
-            margin-left: auto;
-            margin-right: auto;
-            height: 350px; /* Base mobile height */
-            max-height: 400px;
-        }
-
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 400px;
+          },
+          fontFamily: {
+            heading: ['Poppins', 'sans-serif'],
+            body: ['Helvetica', 'Arial', 'sans-serif']
+          },
+          animation: {
+            'gradient': 'gradient 12s ease infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'pulse-slow': 'pulse 4s ease-in-out infinite',
+            'spin-slow': 'spin 20s linear infinite',
+            'fade-up': 'fadeUp 0.8s ease forwards',
+            'glow': 'glow 2s ease-in-out infinite alternate'
+          },
+          keyframes: {
+            gradient: {
+              '0%, 100%': { 'background-position': '0% 50%' },
+              '50%': { 'background-position': '100% 50%' }
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-20px)' }
+            },
+            fadeUp: {
+              '0%': { opacity: 0, transform: 'translateY(30px)' },
+              '100%': { opacity: 1, transform: 'translateY(0)' }
+            },
+            glow: {
+              '0%': { boxShadow: '0 0 20px rgba(254, 205, 26, 0.4)' },
+              '100%': { boxShadow: '0 0 40px rgba(254, 205, 26, 0.8)' }
             }
+          }
         }
+      }
+    }
+  </script>
 
-        /* CSS Diagrams (No SVG) */
-        .arrow-down {
-            width: 0; 
-            height: 0; 
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 15px solid #2563EB;
-            margin: 10px auto;
-        }
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap');
 
-        .arrow-right {
-            width: 0; 
-            height: 0; 
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            border-left: 15px solid #2563EB;
-            display: inline-block;
-        }
-        
-        .card-hover {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-    </style>
+    * { -webkit-font-smoothing: antialiased; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Helvetica', 'Arial', sans-serif;
+      font-weight: 300;
+      background-color: #0D1B2A;
+      color: #F2F2F2;
+      overflow-x: hidden;
+    }
+    h1, h2, h3, h4, h5, h6 { font-family: 'Poppins', sans-serif; font-weight: 700; }
 
-    <!-- 
-    NARRATIVE PLAN:
-    1. Header/Intro: High impact title, mission statement.
-    2. The Problem vs Solution: Contextualize the need for SAV.
-    3. The SAV Ecosystem (Diagram): Visualizing the 3 pillars (Docs, Tools/AI, Data).
-    4. Efficiency Metrics (Chart): Comparing manual sales vs SAV.
-    5. The Funnel & Data (Chart): How Meta Ads feed the CRM.
-    6. Growth Trends (Chart): ROI analysis over the operational year.
-    7. Roadmap (Timeline): The journey to official launch.
-    8. Conclusion: Call to action.
-    -->
+    /* GRADIENTE ANIMADO */
+    .gradient-mesh {
+      background: linear-gradient(120deg, #0D1B2A 0%, #004F5F 35%, #0D1B2A 70%, #006B7F 100%);
+      background-size: 400% 400%;
+      animation: gradient 12s ease infinite;
+    }
 
-    <!-- 
-    CHART SELECTION JUSTIFICATION (NO SVG):
-    1. Efficiency Comparison -> Grouped Bar Chart (Chart.js) -> Compare values across categories.
-    2. Sales Funnel -> Horizontal Bar Chart (Chart.js) -> Organizer/Process visualization using Canvas.
-    3. Marketing ROI -> Line Chart (Chart.js) -> Show change over time.
-    4. Satisfaction/Speed -> Doughnut Chart (Chart.js) -> Inform proportion.
-    -->
+    /* GLASS MORPHISM */
+    .glass {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(254, 205, 26, 0.1);
+    }
+    .glass-dark {
+      background: rgba(13, 27, 42, 0.6);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(0, 107, 127, 0.2);
+    }
+    .glass-yellow {
+      background: rgba(254, 205, 26, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(254, 205, 26, 0.3);
+    }
+
+    /* PARTÍCULAS DE FONDO */
+    .particles {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(254, 205, 26, 0.3), transparent);
+      animation: float 8s ease-in-out infinite;
+    }
+
+    /* GLOW BORDER */
+    .glow-border {
+      position: relative;
+    }
+    .glow-border::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      padding: 2px;
+      background: linear-gradient(135deg, #FECD1A, #004F5F, #FECD1A);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    /* HOVER LIFT */
+    .hover-lift { transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .hover-lift:hover { transform: translateY(-8px); }
+
+    /* SHINE EFFECT EN BOTÓN */
+    .btn-shine { position: relative; overflow: hidden; }
+    .btn-shine::after {
+      content: '';
+      position: absolute;
+      top: -50%; left: -100%;
+      width: 60%; height: 200%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+      transform: rotate(20deg);
+      transition: left 0.7s ease;
+    }
+    .btn-shine:hover::after { left: 130%; }
+
+    /* SCROLL PROGRESS */
+    .scroll-progress {
+      position: fixed; top: 0; left: 0; width: 0%; height: 3px;
+      background: linear-gradient(90deg, #FECD1A, #006B7F);
+      z-index: 100; transition: width 0.1s;
+    }
+
+    /* COUNTERS */
+    .count { font-variant-numeric: tabular-nums; }
+
+    /* CHAT BUBBLE TYPING ANIMATION */
+    .typing-dot {
+      display: inline-block; width: 6px; height: 6px; margin: 0 1px;
+      background: #FECD1A; border-radius: 50%;
+      animation: typing 1.4s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-8px); opacity: 1; }
+    }
+
+    /* LOGOS BAR */
+    .logo-placeholder {
+      display: flex; align-items: center; justify-content: center;
+      height: 60px; padding: 0 20px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+      border: 1px solid rgba(254, 205, 26, 0.15);
+      border-radius: 8px;
+      font-family: 'Poppins'; font-weight: 700;
+      color: rgba(242, 242, 242, 0.7);
+      letter-spacing: 0.05em;
+      transition: all 0.3s ease;
+    }
+    .logo-placeholder:hover {
+      color: #FECD1A; border-color: #FECD1A;
+      box-shadow: 0 0 20px rgba(254, 205, 26, 0.2);
+    }
+
+    /* BLOB DECORATIVO */
+    .blob {
+      position: absolute;
+      filter: blur(80px); opacity: 0.4;
+      border-radius: 50%; pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ACCORDION FAQ */
+    .faq-item summary { list-style: none; cursor: pointer; }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary::after {
+      content: '+'; float: right;
+      font-size: 1.5rem; color: #FECD1A;
+      transition: transform 0.3s;
+    }
+    .faq-item[open] summary::after { transform: rotate(45deg); }
+
+    /* GRADIENT TEXT */
+    .text-gradient {
+      background: linear-gradient(135deg, #FECD1A 0%, #ffffff 50%, #006B7F 100%);
+      -webkit-background-clip: text;
+              background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+
+    /* SECTION DIVIDER */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(254, 205, 26, 0.3), transparent);
+    }
+
+    /* LOGOS DE CLIENTES */
+    .logo-placeholder {
+      background: rgba(255, 255, 255, 0.10) !important;
+      border: 1px solid rgba(255, 255, 255, 0.18) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .client-logo {
+      max-height: 36px;
+      max-width: 120px;
+      object-fit: contain;
+      opacity: 0.85;
+      transition: opacity 0.3s ease;
+      display: block;
+    }
+    .logo-placeholder:hover .client-logo {
+      opacity: 1;
+    }
+    .card-logo {
+      max-height: 52px;
+      max-width: 160px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+      transition: opacity 0.3s ease;
+      opacity: 0.9;
+    }
+    .glass:hover .card-logo { opacity: 1; }
+
+    /* FOTO HANSSEN */
+    .hanssen-photo {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      border-radius: 50%;
+    }
+
+    /* FAQ ANIMACIÓN */
+    details.faq-item > p {
+      animation: none;
+    }
+    details.faq-item[open] > p {
+      animation: faqReveal 0.3s ease both;
+    }
+    @keyframes faqReveal {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* HAMBURGER MOBILE */
+    .ham-line { display: block; width: 22px; height: 2px; background: #F2F2F2; border-radius: 2px; transition: all 0.3s ease; }
+    #hamburger.open .ham-line:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    #hamburger.open .ham-line:nth-child(2) { opacity: 0; }
+    #hamburger.open .ham-line:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+    /* FLOATING BUTTONS */
+    #wa-float, #scrollTop { transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+    #wa-float:hover, #scrollTop:hover { transform: scale(1.12); }
+    #scrollTop { opacity: 0; pointer-events: none; }
+    #scrollTop.visible { opacity: 1; pointer-events: auto; }
+
+    /* TRUST STRIP */
+    .trust-num { font-variant-numeric: tabular-nums; }
+
+    /* PAIN ANIMATIONS — sección del problema */
+    @keyframes painPulse {
+      0%, 100% {
+        color: #FECD1A;
+        text-shadow: 0 0 30px rgba(254, 205, 26, 0.4);
+      }
+      50% {
+        color: #ff6b6b;
+        text-shadow: 0 0 40px rgba(255, 107, 107, 0.7);
+      }
+    }
+    .pain-number { animation: painPulse 3s ease-in-out infinite; }
+
+    @keyframes tick {
+      0%, 80%, 100% { transform: rotate(0deg); }
+      85%, 95% { transform: rotate(8deg); }
+      90% { transform: rotate(-8deg); }
+    }
+    .icon-pain { display: inline-block; animation: tick 2.5s ease-in-out infinite; transform-origin: center; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-3px); }
+      75% { transform: translateX(3px); }
+    }
+    .pain-card:hover .pain-number { animation: shake 0.4s ease-in-out infinite, painPulse 1.5s ease-in-out infinite; }
+    .pain-card:hover { border-color: rgba(255, 107, 107, 0.5) !important; }
+
+    @keyframes drip {
+      0%, 100% { transform: translateY(0); opacity: 1; }
+      50% { transform: translateY(8px); opacity: 0.6; }
+    }
+    .icon-drip { display: inline-block; animation: drip 2.5s ease-in-out infinite; }
+
+    @keyframes chaos {
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      25% { transform: rotate(-5deg) scale(1.05); }
+      50% { transform: rotate(0deg) scale(0.95); }
+      75% { transform: rotate(5deg) scale(1.05); }
+    }
+    .icon-chaos { display: inline-block; animation: chaos 2s ease-in-out infinite; }
+  </style>
 </head>
-<body class="text-gray-800">
 
-    <!-- HERO SECTION -->
-    <header class="bg-gradient-to-r from-brand-dark via-brand-blue to-brand-purple text-white py-20 px-4 shadow-xl">
-        <div class="max-w-6xl mx-auto text-center">
-            <h2 class="text-brand-accent font-bold tracking-widest uppercase mb-4 text-sm md:text-base">PotencIA Empresarial</h2>
-            <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
-                Datos & Automatización:<br>
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-white">La Nueva Era Empresarial</span>
-            </h1>
-            <p class="text-xl md:text-2xl font-light text-blue-100 max-w-3xl mx-auto">
-                Potenciando empresas con tecnología, marketing y el poder de la Inteligencia Artificial.
-            </p>
+<body class="bg-brand-navy text-brand-light">
+
+<!-- SCROLL PROGRESS BAR -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- ====================== 1. NAV STICKY ====================== -->
+<nav class="fixed top-0 left-0 right-0 z-50 glass-dark border-b border-brand-teal/30">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+    <a href="#" class="flex items-center gap-2 group">
+      <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-yellow to-brand-teal flex items-center justify-center font-heading font-extrabold text-brand-navy text-lg">P</div>
+      <span class="font-heading font-bold text-lg tracking-tight">Potenc<span class="text-brand-yellow">IA</span> Empresar<span class="text-brand-yellow">IA</span>l</span>
+    </a>
+    <div class="hidden md:flex items-center gap-8 text-sm">
+      <a href="#problema" class="hover:text-brand-yellow transition">El Problema</a>
+      <a href="#sav" class="hover:text-brand-yellow transition">El SAV</a>
+      <a href="#casos" class="hover:text-brand-yellow transition">Casos</a>
+      <a href="#metodologia" class="hover:text-brand-yellow transition">Metodología</a>
+      <a href="diagnostico.html" class="hover:text-brand-yellow transition">Diagnóstico</a>
+    </div>
+    <!-- Hamburger (solo mobile) -->
+    <button id="hamburger" class="md:hidden flex flex-col gap-1.5 p-2 focus:outline-none" aria-label="Menú">
+      <span class="ham-line"></span>
+      <span class="ham-line"></span>
+      <span class="ham-line"></span>
+    </button>
+    <a href="https://wa.me/+573151209285" target="_blank" rel="noopener"
+       class="hidden md:inline-flex btn-shine bg-brand-yellow hover:bg-yellow-300 text-brand-navy font-bold py-2 px-5 rounded-full text-sm transition">
+      WhatsApp →
+    </a>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div id="mobileMenu" class="fixed top-[73px] left-0 right-0 z-40 glass-dark border-b border-brand-teal/30 py-6 px-6 md:hidden translate-y-[-110%] transition-transform duration-300">
+  <nav class="flex flex-col gap-1 text-sm mb-6">
+    <a href="#problema" class="mobile-link py-3 border-b border-brand-teal/20 hover:text-brand-yellow transition">El Problema</a>
+    <a href="#sav"      class="mobile-link py-3 border-b border-brand-teal/20 hover:text-brand-yellow transition">El SAV</a>
+    <a href="#casos"    class="mobile-link py-3 border-b border-brand-teal/20 hover:text-brand-yellow transition">Casos reales</a>
+    <a href="#metodologia" class="mobile-link py-3 border-b border-brand-teal/20 hover:text-brand-yellow transition">Metodología</a>
+    <a href="diagnostico.html" class="mobile-link py-3 border-b border-brand-teal/20 hover:text-brand-yellow transition">Diagnóstico</a>
+  </nav>
+  <a href="https://wa.me/+573151209285" target="_blank"
+     class="block text-center bg-brand-yellow text-brand-navy font-bold py-3 rounded-full text-sm">
+    📲 Hablar por WhatsApp
+  </a>
+</div>
+
+<!-- ====================== 2. HERO ====================== -->
+<header class="relative min-h-screen flex items-center justify-center overflow-hidden gradient-mesh pt-24 pb-12">
+  <!-- Decorative blobs -->
+  <div class="blob bg-brand-yellow w-96 h-96 -top-20 -left-20"></div>
+  <div class="blob bg-brand-teal w-[500px] h-[500px] bottom-0 right-0"></div>
+
+  <!-- Particles -->
+  <div class="particles">
+    <div class="particle w-3 h-3" style="top: 15%; left: 10%; animation-delay: 0s;"></div>
+    <div class="particle w-2 h-2" style="top: 30%; left: 80%; animation-delay: 1s;"></div>
+    <div class="particle w-4 h-4" style="top: 70%; left: 20%; animation-delay: 2s;"></div>
+    <div class="particle w-2 h-2" style="top: 50%; left: 90%; animation-delay: 3s;"></div>
+    <div class="particle w-3 h-3" style="top: 85%; left: 60%; animation-delay: 4s;"></div>
+    <div class="particle w-1 h-1" style="top: 25%; left: 50%; animation-delay: 5s;"></div>
+  </div>
+
+  <div class="relative z-10 max-w-6xl mx-auto px-4 text-center">
+    <!-- Badge -->
+    <div data-aos="fade-down" class="inline-flex items-center gap-2 glass-yellow rounded-full px-4 py-2 mb-8 text-sm">
+      <span class="w-2 h-2 bg-brand-yellow rounded-full animate-pulse"></span>
+      <span class="text-brand-yellow font-semibold">Agencia de IA B2B · ISO 9001:2015</span>
+    </div>
+
+    <!-- Headline -->
+    <h1 data-aos="fade-up" data-aos-delay="100" class="text-5xl md:text-7xl lg:text-8xl font-extrabold leading-[1.05] mb-8">
+      Cada lead que no respondes<br>
+      <span class="text-brand-light">ya es de</span>
+      <span class="text-gradient">tu competencia.</span>
+    </h1>
+
+    <p data-aos="fade-up" data-aos-delay="200" class="text-xl md:text-2xl font-light text-brand-light/80 max-w-3xl mx-auto mb-10">
+      Implementamos un <strong class="text-white">Sistema Automatizado de Ventas (SAV)</strong> que responde en <strong class="text-brand-yellow">menos de 5 segundos</strong>, califica cada prospecto y libera a tu equipo para cerrar lo que importa.
+    </p>
+
+    <!-- CTAs -->
+    <div data-aos="fade-up" data-aos-delay="300" class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+      <a href="diagnostico.html"
+         class="btn-shine bg-brand-yellow hover:bg-yellow-300 text-brand-navy font-bold py-4 px-8 rounded-full shadow-2xl text-lg transition transform hover:-translate-y-1 animate-glow">
+        🔍 Pide tu Diagnóstico Gratuito
+      </a>
+      <a href="https://wa.me/+573151209285" target="_blank" rel="noopener"
+         class="border-2 border-brand-yellow/40 hover:border-brand-yellow text-brand-light hover:text-brand-yellow font-bold py-4 px-8 rounded-full text-lg transition transform hover:-translate-y-1">
+        Hablar por WhatsApp →
+      </a>
+    </div>
+
+    <!-- Logo bar -->
+    <div data-aos="fade-up" data-aos-delay="400" class="pt-8">
+      <p class="text-xs uppercase tracking-widest text-brand-yellow/70 mb-4">Empresas que ya operan con PotencIA</p>
+      <div class="flex flex-wrap items-center justify-center gap-4 max-w-4xl mx-auto">
+        <div class="logo-placeholder">
+          <img src="assets/clients/zona-creativa.png" alt="Zona Creativa" class="client-logo"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+          <span class="logo-fallback" style="display:none;">Zona Creativa</span>
         </div>
-    </header>
+        <div class="logo-placeholder">
+          <img src="assets/clients/dym-solar.png" alt="DyM Solar" class="client-logo"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+          <span class="logo-fallback" style="display:none;">DyM Solar</span>
+        </div>
+        <div class="logo-placeholder">
+          <img src="assets/clients/smart-energy.png" alt="Smart Energy" class="client-logo"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+          <span class="logo-fallback" style="display:none;">Smart Energy</span>
+        </div>
+        <div class="logo-placeholder">
+          <img src="assets/clients/uparsistem.png" alt="Uparsistem" class="client-logo"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+          <span class="logo-fallback" style="display:none;">Uparsistem</span>
+        </div>
+        <div class="logo-placeholder">
+          <img src="assets/clients/cda-moto-cesar.jpg" alt="CDA Moto Cesar" class="client-logo"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+          <span class="logo-fallback" style="display:none;">CDA Moto Cesar</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
 
-    <!-- MAIN CONTENT GRID -->
-    <main class="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+<!-- ====================== TRUST STRIP ====================== -->
+<div class="py-10 px-4 border-y border-brand-teal/20 bg-brand-navy2/60">
+  <div class="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+    <div data-aos="fade-up" data-aos-delay="0">
+      <div class="text-3xl font-heading font-extrabold text-brand-yellow trust-num">5</div>
+      <div class="text-xs text-brand-light/55 mt-1 uppercase tracking-widest">Empresas implementadas</div>
+    </div>
+    <div data-aos="fade-up" data-aos-delay="80">
+      <div class="text-3xl font-heading font-extrabold text-brand-yellow trust-num">60</div>
+      <div class="text-xs text-brand-light/55 mt-1 uppercase tracking-widest">Días de implementación</div>
+    </div>
+    <div data-aos="fade-up" data-aos-delay="160">
+      <div class="text-3xl font-heading font-extrabold text-brand-yellow trust-num">&lt;5 seg</div>
+      <div class="text-xs text-brand-light/55 mt-1 uppercase tracking-widest">Speed to Lead con SAV</div>
+    </div>
+    <div data-aos="fade-up" data-aos-delay="240">
+      <div class="text-3xl font-heading font-extrabold text-brand-yellow trust-num">ISO</div>
+      <div class="text-xs text-brand-light/55 mt-1 uppercase tracking-widest">9001:2015 framework</div>
+    </div>
+  </div>
+</div>
 
-        <!-- INTRO: VISION & MISSION -->
-        <section class="md:col-span-2 bg-white rounded-2xl shadow-md p-8 border-l-8 border-brand-purple">
-            <h3 class="text-2xl font-bold text-brand-dark mb-4">Nuestra Visión</h3>
-            <p class="text-lg leading-relaxed text-gray-600 mb-6">
-                En un mundo saturado de información, la velocidad y la precisión son moneda de cambio. 
-                <strong>PotencIA Empresarial</strong> no es solo una agencia; es un socio estratégico. 
-                Nuestra misión es clara: estandarizar y potenciar el crecimiento comercial mediante la adopción de herramientas tecnológicas avanzadas.
-            </p>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-                <div class="p-4 bg-blue-50 rounded-lg">
-                    <div class="text-4xl mb-2">🤖</div>
-                    <h4 class="font-bold text-brand-blue">IA & Agentes</h4>
-                    <p class="text-sm">Atención 24/7</p>
-                </div>
-                <div class="p-4 bg-purple-50 rounded-lg">
-                    <div class="text-4xl mb-2">📊</div>
-                    <h4 class="font-bold text-brand-purple">Data Driven</h4>
-                    <p class="text-sm">Decisiones Reales</p>
-                </div>
-                <div class="p-4 bg-amber-50 rounded-lg">
-                    <div class="text-4xl mb-2">🚀</div>
-                    <h4 class="font-bold text-brand-accent">Automatización</h4>
-                    <p class="text-sm">Procesos Óptimos</p>
-                </div>
+<!-- ====================== 3. PROBLEMA ====================== -->
+<section id="problema" class="relative py-24 px-4 overflow-hidden">
+  <div class="blob bg-brand-teal w-96 h-96 top-1/4 -right-20"></div>
+  <div class="max-w-6xl mx-auto relative z-10">
+    <div class="text-center mb-16">
+      <p data-aos="fade-up" class="text-brand-yellow font-bold uppercase tracking-widest text-sm mb-3">El problema real</p>
+      <h2 data-aos="fade-up" data-aos-delay="100" class="text-4xl md:text-6xl font-extrabold mb-4">
+        Tu equipo comercial está perdiendo<br>
+        <span class="text-gradient">leads que ya pagaste</span>
+      </h2>
+      <p data-aos="fade-up" data-aos-delay="200" class="text-xl text-brand-light/70 max-w-3xl mx-auto">
+        No es un problema de talento. Es un problema de sistema.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <div data-aos="fade-up" data-aos-delay="100" class="glass hover-lift pain-card p-8 rounded-2xl">
+        <div class="text-2xl mb-2 icon-pain">⏰</div>
+        <div class="text-6xl font-heading font-extrabold mb-2 pain-number">
+          <span class="count" data-target="42">42</span><span class="text-3xl ml-1">horas</span>
+        </div>
+        <h3 class="text-xl font-bold mb-3">Tiempo de respuesta promedio</h3>
+        <p class="text-brand-light/70">Lo que tarda un negocio promedio en responder un lead nuevo. Cuando llega la respuesta, el lead ya habló con 3 competidores.</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="200" class="glass hover-lift pain-card p-8 rounded-2xl">
+        <div class="text-2xl mb-2 icon-drip">💸</div>
+        <div class="text-6xl font-heading font-extrabold mb-2 pain-number">
+          <span class="count" data-target="65">65</span>%
+        </div>
+        <h3 class="text-xl font-bold mb-3">de leads se pierden</h3>
+        <p class="text-brand-light/70">Por falta de seguimiento sistemático. La información del cliente se pierde en chats, libretas y memoria del vendedor que ya no está.</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="300" class="glass hover-lift pain-card p-8 rounded-2xl">
+        <div class="text-2xl mb-2 icon-chaos">🌀</div>
+        <div class="text-6xl font-heading font-extrabold mb-2 pain-number">
+          <span class="count" data-target="70">70</span>%
+        </div>
+        <h3 class="text-xl font-bold mb-3">del tiempo en tareas operativas</h3>
+        <p class="text-brand-light/70">Tu equipo pasa más tiempo actualizando reportes, copiando datos y armando seguimientos que vendiendo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider max-w-4xl mx-auto"></div>
+
+<!-- ====================== 4. EL SAV ====================== -->
+<section id="sav" class="relative py-24 px-4 overflow-hidden">
+  <div class="blob bg-brand-yellow w-[500px] h-[500px] -bottom-40 -left-40"></div>
+  <div class="max-w-6xl mx-auto relative z-10">
+    <div class="text-center mb-16">
+      <p data-aos="fade-up" class="text-brand-yellow font-bold uppercase tracking-widest text-sm mb-3">La solución</p>
+      <h2 data-aos="fade-up" data-aos-delay="100" class="text-4xl md:text-6xl font-extrabold mb-4">
+        Conoce el <span class="text-gradient">SAV</span>
+      </h2>
+      <p data-aos="fade-up" data-aos-delay="200" class="text-xl text-brand-light/70 max-w-3xl mx-auto">
+        Sistema Automatizado de Ventas implementado en 60 días. Cuatro componentes que trabajan como uno.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- ASISTENTE 24/7 -->
+      <div data-aos="fade-right" class="glass-yellow hover-lift rounded-3xl p-8 relative overflow-hidden">
+        <div class="absolute top-4 right-4 text-xs font-bold bg-brand-yellow text-brand-navy px-3 py-1 rounded-full">CORE</div>
+        <div class="text-5xl mb-4">🤖</div>
+        <h3 class="text-2xl font-heading font-bold text-brand-yellow mb-2">Asistente Comercial 24/7</h3>
+        <p class="text-brand-light/80 mb-6">Responde, conversa y califica a cada prospecto en WhatsApp — al instante, sin descanso. Adaptado a tu negocio, tu tono y tus productos.</p>
+        <!-- Chat preview -->
+        <div class="glass-dark rounded-2xl p-4 space-y-3">
+          <div class="bg-brand-teal/30 rounded-2xl rounded-bl-sm p-3 text-sm max-w-xs">
+            Hola 👋 Vi tu publicidad, ¿manejan paneles solares para empresas?
+          </div>
+          <div class="bg-brand-yellow text-brand-navy rounded-2xl rounded-br-sm p-3 text-sm max-w-xs ml-auto">
+            ¡Hola! Sí, instalamos sistemas para empresas desde 50kW. Para darte la mejor opción, ¿en qué ciudad estás y cuál es el consumo eléctrico mensual?
+          </div>
+          <div class="text-xs text-brand-light/50 flex items-center gap-1">
+            <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+            <span class="ml-2">Respondió en 2 segundos</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- INFORMACIÓN CENTRALIZADA -->
+      <div data-aos="fade-left" class="glass hover-lift rounded-3xl p-8 relative overflow-hidden">
+        <div class="text-5xl mb-4">🗄️</div>
+        <h3 class="text-2xl font-heading font-bold text-white mb-2">Información Centralizada</h3>
+        <p class="text-brand-light/80 mb-6">Toda la información de cada cliente en un solo lugar. Sin pérdidas, sin duplicados, sin "eso lo tenía en mi WhatsApp".</p>
+        <div class="space-y-2 text-sm">
+          <div class="flex items-center gap-2"><span class="text-brand-yellow">✓</span> Captura automática de datos del prospecto</div>
+          <div class="flex items-center gap-2"><span class="text-brand-yellow">✓</span> Historial completo de cada conversación</div>
+          <div class="flex items-center gap-2"><span class="text-brand-yellow">✓</span> Asignación inteligente a la persona correcta</div>
+          <div class="flex items-center gap-2"><span class="text-brand-yellow">✓</span> Reportes en tiempo real</div>
+        </div>
+      </div>
+
+      <!-- RESPUESTA INMEDIATA -->
+      <div data-aos="fade-right" data-aos-delay="100" class="glass hover-lift rounded-3xl p-8 relative overflow-hidden">
+        <div class="text-5xl mb-4">⚡</div>
+        <h3 class="text-2xl font-heading font-bold text-white mb-2">Respuesta Inmediata</h3>
+        <p class="text-brand-light/80 mb-6">Atención en segundos las 24 horas, los 7 días. Mientras la competencia duerme, tú estás vendiendo.</p>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="text-center p-3 bg-red-500/10 border border-red-500/30 rounded-xl">
+            <div class="text-3xl font-heading font-extrabold text-red-400">42h</div>
+            <div class="text-xs text-brand-light/60">Promedio del mercado</div>
+          </div>
+          <div class="text-center p-3 bg-brand-yellow/10 border border-brand-yellow/40 rounded-xl">
+            <div class="text-3xl font-heading font-extrabold text-brand-yellow">&lt;5seg</div>
+            <div class="text-xs text-brand-light/60">Con tu SAV</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OPTIMIZACIÓN DE CAMPAÑAS -->
+      <div data-aos="fade-left" data-aos-delay="100" class="glass hover-lift rounded-3xl p-8 relative overflow-hidden">
+        <div class="text-5xl mb-4">📊</div>
+        <h3 class="text-2xl font-heading font-bold text-white mb-2">Campañas que se Optimizan Solas</h3>
+        <p class="text-brand-light/80 mb-6">Conectamos tus anuncios de Meta con tu sistema de ventas. El algoritmo aprende de cada cliente que cierras y mejora tus campañas automáticamente.</p>
+        <div class="space-y-2 text-sm">
+          <div class="flex items-center gap-2"><span class="text-brand-yellow">✓</span> Cada venta enseña al algoritmo</div>
+          <div class="flex items-center gap-2"><span class="text-brand-yellow">✓</span> Reducción automática del costo por cliente</div>
+          <div class="flex items-center gap-2"><span class="text-brand-yellow">✓</span> Trazabilidad de cada peso invertido</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider max-w-4xl mx-auto"></div>
+
+<!-- ====================== 5. METODOLOGÍA ====================== -->
+<section id="metodologia" class="relative py-24 px-4 overflow-hidden">
+  <div class="max-w-6xl mx-auto relative z-10">
+    <div class="text-center mb-16">
+      <p data-aos="fade-up" class="text-brand-yellow font-bold uppercase tracking-widest text-sm mb-3">Cómo lo hacemos</p>
+      <h2 data-aos="fade-up" data-aos-delay="100" class="text-4xl md:text-6xl font-extrabold mb-4">
+        Tu SAV operando en <span class="text-gradient">60 días</span>
+      </h2>
+      <p data-aos="fade-up" data-aos-delay="200" class="text-xl text-brand-light/70 max-w-3xl mx-auto">
+        Tres fases con entregables claros, hitos verificables y marco ISO 9001:2015.
+      </p>
+    </div>
+
+    <div class="space-y-6">
+      <!-- FASE 1 -->
+      <div data-aos="fade-up" class="glass-dark rounded-3xl p-8 md:p-12 grid md:grid-cols-[auto,1fr,auto] gap-8 items-center">
+        <div class="text-center md:text-left">
+          <div class="inline-block text-7xl font-heading font-extrabold text-brand-yellow">01</div>
+          <p class="text-sm uppercase tracking-widest text-brand-light/60 mt-1">Días 1–15</p>
+        </div>
+        <div>
+          <h3 class="text-2xl md:text-3xl font-heading font-bold text-white mb-2">Diagnóstico + Estrategia</h3>
+          <p class="text-brand-light/70">Auditamos tu proceso comercial actual, mapeamos el funnel real, definimos el ICP, y diseñamos la arquitectura de tu SAV específico. Entregable: plan de implementación personalizado.</p>
+        </div>
+        <div class="text-3xl">🎯</div>
+      </div>
+
+      <!-- FASE 2 -->
+      <div data-aos="fade-up" data-aos-delay="100" class="glass-dark rounded-3xl p-8 md:p-12 grid md:grid-cols-[auto,1fr,auto] gap-8 items-center border-brand-yellow/40 border-2">
+        <div class="text-center md:text-left">
+          <div class="inline-block text-7xl font-heading font-extrabold text-brand-yellow">02</div>
+          <p class="text-sm uppercase tracking-widest text-brand-light/60 mt-1">Días 15–45</p>
+        </div>
+        <div>
+          <h3 class="text-2xl md:text-3xl font-heading font-bold text-white mb-2">Implementación</h3>
+          <p class="text-brand-light/70">Configuramos tu Asistente Comercial con tu tono y tus productos, centralizamos la información de cada prospecto, conectamos tus campañas de Meta y construimos los flujos automáticos de respuesta y calificación. Tu equipo se entrena en paralelo.</p>
+        </div>
+        <div class="text-3xl">⚙️</div>
+      </div>
+
+      <!-- FASE 3 -->
+      <div data-aos="fade-up" data-aos-delay="200" class="glass-dark rounded-3xl p-8 md:p-12 grid md:grid-cols-[auto,1fr,auto] gap-8 items-center">
+        <div class="text-center md:text-left">
+          <div class="inline-block text-7xl font-heading font-extrabold text-brand-yellow">03</div>
+          <p class="text-sm uppercase tracking-widest text-brand-light/60 mt-1">Días 45–60</p>
+        </div>
+        <div>
+          <h3 class="text-2xl md:text-3xl font-heading font-bold text-white mb-2">Optimización + Entrega</h3>
+          <p class="text-brand-light/70">Ajuste fino con datos reales de operación. Validación de KPIs (Speed to Lead, Tasa de Calificación, Tasa de Captura). Entrega formal con QA ISO 9001 y documentación operativa.</p>
+        </div>
+        <div class="text-3xl">🚀</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider max-w-4xl mx-auto"></div>
+
+<!-- ====================== 6. CASOS DE ÉXITO ====================== -->
+<section id="casos" class="relative py-24 px-4 overflow-hidden">
+  <div class="blob bg-brand-teal w-96 h-96 top-1/4 left-0"></div>
+  <div class="max-w-6xl mx-auto relative z-10">
+    <div class="text-center mb-16">
+      <p data-aos="fade-up" class="text-brand-yellow font-bold uppercase tracking-widest text-sm mb-3">Casos reales</p>
+      <h2 data-aos="fade-up" data-aos-delay="100" class="text-4xl md:text-6xl font-extrabold mb-4">
+        Negocios que ya operan con <span class="text-gradient">PotencIA</span>
+      </h2>
+      <p data-aos="fade-up" data-aos-delay="200" class="text-xl text-brand-light/70 max-w-3xl mx-auto">
+        Cinco empresas, cinco industrias distintas, una metodología.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- ZONA CREATIVA -->
+      <div data-aos="fade-up" data-aos-delay="100" class="glass hover-lift rounded-3xl p-8">
+        <div class="flex items-center justify-center mb-6 h-20">
+          <img src="assets/clients/zona-creativa.png" alt="Zona Creativa" class="card-logo"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+          <span class="logo-fallback" style="display:none;">Zona Creativa</span>
+        </div>
+        <p class="text-xs uppercase tracking-widest text-brand-light/50 mb-1">Industria · Marketing</p>
+        <h3 class="text-2xl font-heading font-bold text-white mb-4">Zona Creativa</h3>
+        <div class="space-y-3 text-sm">
+          <div class="glass-dark rounded-xl p-3">
+            <p class="text-brand-yellow font-bold text-2xl">↓ 87%</p>
+            <p class="text-brand-light/70">Reducción en tiempo de respuesta a leads</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- DYM SOLAR -->
+      <div data-aos="fade-up" data-aos-delay="200" class="glass hover-lift rounded-3xl p-8">
+        <div class="flex items-center justify-center mb-6 h-20">
+          <img src="assets/clients/dym-solar.png" alt="DyM Solar" class="card-logo"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+          <span class="logo-fallback" style="display:none;">DyM Solar</span>
+        </div>
+        <p class="text-xs uppercase tracking-widest text-brand-light/50 mb-1">Industria · Energía Solar</p>
+        <h3 class="text-2xl font-heading font-bold text-white mb-4">DyM Solar</h3>
+        <div class="space-y-3 text-sm">
+          <div class="glass-dark rounded-xl p-3">
+            <p class="text-brand-yellow font-bold text-2xl">3 min</p>
+            <p class="text-brand-light/70">Speed to Lead promedio (antes: 4 horas)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SMART ENERGY -->
+      <div data-aos="fade-up" data-aos-delay="300" class="glass hover-lift rounded-3xl p-8">
+        <div class="flex items-center justify-center mb-6 h-20">
+          <img src="assets/clients/smart-energy.png" alt="Smart Energy" class="card-logo"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+          <span class="logo-fallback" style="display:none;">Smart Energy</span>
+        </div>
+        <p class="text-xs uppercase tracking-widest text-brand-light/50 mb-1">Industria · Energía</p>
+        <h3 class="text-2xl font-heading font-bold text-white mb-4">Smart Energy</h3>
+        <div class="space-y-3 text-sm">
+          <div class="glass-dark rounded-xl p-3">
+            <p class="text-brand-yellow font-bold text-2xl">100%</p>
+            <p class="text-brand-light/70">Captura de datos de leads en CRM unificado</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- UPARSISTEM -->
+      <div data-aos="fade-up" data-aos-delay="400" class="glass hover-lift rounded-3xl p-8">
+        <div class="flex items-center justify-center mb-6 h-20">
+          <img src="assets/clients/uparsistem.png" alt="Uparsistem" class="card-logo"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+          <span class="logo-fallback" style="display:none;">Uparsistem</span>
+        </div>
+        <p class="text-xs uppercase tracking-widest text-brand-light/50 mb-1">Industria · Educación</p>
+        <h3 class="text-2xl font-heading font-bold text-white mb-4">Uparsistem</h3>
+        <div class="space-y-3 text-sm">
+          <div class="glass-dark rounded-xl p-3">
+            <p class="text-brand-yellow font-bold text-2xl">24/7</p>
+            <p class="text-brand-light/70">Atención automatizada a aspirantes</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CDA MOTO CESAR -->
+      <div data-aos="fade-up" data-aos-delay="500" class="glass hover-lift rounded-3xl p-8">
+        <div class="flex items-center justify-center mb-6 h-20">
+          <img src="assets/clients/cda-moto-cesar.jpg" alt="CDA Moto Cesar" class="card-logo"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+          <span class="logo-fallback" style="display:none;">CDA Moto Cesar</span>
+        </div>
+        <p class="text-xs uppercase tracking-widest text-brand-light/50 mb-1">Industria · Automotriz</p>
+        <h3 class="text-2xl font-heading font-bold text-white mb-4">CDA Moto Cesar</h3>
+        <div class="space-y-3 text-sm">
+          <div class="glass-dark rounded-xl p-3">
+            <p class="text-brand-yellow font-bold text-2xl">↑ 30%</p>
+            <p class="text-brand-light/70">Aumento en tasa de conversión de prospectos</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TU EMPRESA -->
+      <div data-aos="fade-up" data-aos-delay="600" class="glass-yellow hover-lift rounded-3xl p-8 flex flex-col items-center justify-center text-center min-h-[280px]">
+        <div class="text-5xl mb-4">🚀</div>
+        <h3 class="text-2xl font-heading font-bold text-brand-yellow mb-2">¿Tu empresa es la siguiente?</h3>
+        <p class="text-brand-light/80 mb-6">Empieza con un diagnóstico gratuito.</p>
+        <a href="diagnostico.html" class="bg-brand-yellow hover:bg-yellow-300 text-brand-navy font-bold py-2 px-6 rounded-full text-sm transition">
+          Quiero mi diagnóstico →
+        </a>
+      </div>
+    </div>
+
+    <p class="text-center text-brand-light/50 text-sm mt-10 italic">
+      * Métricas reportadas por los clientes. Testimonios escritos en proceso de validación.
+    </p>
+  </div>
+</section>
+
+<div class="divider max-w-4xl mx-auto"></div>
+
+<!-- ====================== 7. ¿ESTO ES PARA TI? ====================== -->
+<section class="relative py-24 px-4 overflow-hidden">
+  <div class="max-w-5xl mx-auto relative z-10">
+    <div class="text-center mb-16">
+      <p data-aos="fade-up" class="text-brand-yellow font-bold uppercase tracking-widest text-sm mb-3">Calificación honesta</p>
+      <h2 data-aos="fade-up" data-aos-delay="100" class="text-4xl md:text-6xl font-extrabold mb-4">
+        ¿El SAV es para <span class="text-gradient">tu empresa</span>?
+      </h2>
+      <p data-aos="fade-up" data-aos-delay="200" class="text-xl text-brand-light/70 max-w-3xl mx-auto">
+        Preferimos decirte que NO ahora, antes que vendamos algo que no encaja.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- SI -->
+      <div data-aos="fade-right" class="glass-yellow rounded-3xl p-8">
+        <h3 class="text-2xl font-heading font-bold text-brand-yellow mb-6 flex items-center gap-2">
+          <span class="w-10 h-10 bg-brand-yellow text-brand-navy rounded-full flex items-center justify-center">✓</span>
+          Sí, esto es para ti si...
+        </h3>
+        <ul class="space-y-3 text-brand-light">
+          <li class="flex gap-3"><span class="text-brand-yellow font-bold">→</span> Tienes un producto o servicio claro que ya vendes</li>
+          <li class="flex gap-3"><span class="text-brand-yellow font-bold">→</span> Generas prospectos (orgánicos, pagos o referidos)</li>
+          <li class="flex gap-3"><span class="text-brand-yellow font-bold">→</span> Sientes que pierdes ventas por demoras en responder</li>
+          <li class="flex gap-3"><span class="text-brand-yellow font-bold">→</span> Quieres responder rápido sin contratar más personas</li>
+          <li class="flex gap-3"><span class="text-brand-yellow font-bold">→</span> Estás abierto a automatizar tu proceso comercial</li>
+          <li class="flex gap-3"><span class="text-brand-yellow font-bold">→</span> Eres emprendedor solo, equipo pequeño o empresa con área comercial</li>
+        </ul>
+      </div>
+      <!-- NO -->
+      <div data-aos="fade-left" class="glass rounded-3xl p-8">
+        <h3 class="text-2xl font-heading font-bold text-brand-light mb-6 flex items-center gap-2">
+          <span class="w-10 h-10 border-2 border-brand-light/40 text-brand-light/60 rounded-full flex items-center justify-center">✕</span>
+          No, no es para ti si...
+        </h3>
+        <ul class="space-y-3 text-brand-light/70">
+          <li class="flex gap-3"><span class="text-brand-light/40 font-bold">×</span> Aún no tienes producto o servicio validado en el mercado</li>
+          <li class="flex gap-3"><span class="text-brand-light/40 font-bold">×</span> No tienes flujo de prospectos llegando</li>
+          <li class="flex gap-3"><span class="text-brand-light/40 font-bold">×</span> Buscas un chatbot genérico sin estrategia detrás</li>
+          <li class="flex gap-3"><span class="text-brand-light/40 font-bold">×</span> Esperas resultados sin involucrarte en la implementación</li>
+          <li class="flex gap-3"><span class="text-brand-light/40 font-bold">×</span> Crees que la IA reemplaza el criterio comercial humano</li>
+          <li class="flex gap-3"><span class="text-brand-light/40 font-bold">×</span> No estás dispuesto a documentar tu proceso de venta</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider max-w-4xl mx-auto"></div>
+
+<!-- ====================== 8. AUTORIDAD ====================== -->
+<section class="relative py-24 px-4 overflow-hidden">
+  <div class="blob bg-brand-yellow w-96 h-96 -bottom-20 -right-20"></div>
+  <div class="max-w-5xl mx-auto relative z-10">
+    <div class="grid md:grid-cols-[1fr,2fr] gap-12 items-center">
+      <div data-aos="fade-right" class="text-center md:text-left">
+        <div class="w-52 h-52 mx-auto md:mx-0 rounded-full bg-gradient-to-br from-brand-yellow to-brand-teal p-1 shadow-2xl" style="box-shadow: 0 0 40px rgba(254,205,26,0.25);">
+          <div class="w-full h-full rounded-full overflow-hidden bg-brand-navy relative flex items-center justify-center">
+            <!-- Foto real: coloca hanssen-guerra.jpg en assets/hanssen/ -->
+            <img src="assets/hanssen/hanssen-guerra.jpg"
+                 alt="Hanssen Guerra — Fundador PotencIA Empresarial"
+                 class="hanssen-photo absolute inset-0 z-10"
+                 onerror="this.style.display='none';">
+            <!-- Placeholder mientras no hay foto -->
+            <div class="flex flex-col items-center justify-center gap-1 z-0">
+              <span class="text-6xl font-heading font-extrabold text-brand-yellow leading-none">H</span>
+              <span class="text-[9px] uppercase tracking-widest text-brand-yellow/50 font-semibold">Foto pendiente</span>
             </div>
-        </section>
+          </div>
+        </div>
+      </div>
+      <div data-aos="fade-left">
+        <p class="text-brand-yellow font-bold uppercase tracking-widest text-sm mb-3">Quién está detrás</p>
+        <h2 class="text-3xl md:text-5xl font-extrabold mb-4">Hanssen Guerra</h2>
+        <p class="text-xl text-brand-light/70 mb-6">Fundador de PotencIA EmpresarIAl.</p>
+        <p class="text-brand-light/80 mb-6">
+          Ingeniero industrial con especialización en Inteligencia Artificial. Consultor empresarial enfocado en crecimiento digital y e-commerce. Combino el rigor de la ingeniería con la estrategia comercial para construir sistemas que generan resultados medibles.
+        </p>
+        <div class="flex flex-wrap gap-2">
+          <span class="glass-yellow text-brand-yellow px-3 py-1 rounded-full text-sm font-semibold">Ingeniero Industrial</span>
+          <span class="glass-yellow text-brand-yellow px-3 py-1 rounded-full text-sm font-semibold">Especialista en IA</span>
+          <span class="glass text-brand-light/80 px-3 py-1 rounded-full text-sm">Consultor en Crecimiento Digital</span>
+          <span class="glass text-brand-light/80 px-3 py-1 rounded-full text-sm">Experto en E-commerce</span>
+          <span class="glass text-brand-light/80 px-3 py-1 rounded-full text-sm">Speaker</span>
+          <span class="glass text-brand-light/80 px-3 py-1 rounded-full text-sm">Partner Especialista Pancake</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        <!-- SECTION: THE SAV SYSTEM (Diagram) -->
-        <section class="md:col-span-2">
-            <div class="mb-6">
-                <h3 class="text-3xl font-bold text-gray-800">El Ecosistema SAV</h3>
-                <p class="text-gray-600 mt-2">
-                    El <strong>Sistema Automatizado de Ventas (SAV)</strong> es nuestro producto estrella. Transformamos el caos comercial en una máquina predecible mediante tres pilares fundamentales.
-                </p>
-            </div>
-            
-            <!-- HTML/CSS Flow Chart (No SVG) -->
-            <div class="bg-white rounded-2xl shadow-md p-8 overflow-hidden">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4 relative z-10">
-                    
-                    <!-- Step 1 -->
-                    <div class="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 p-6 rounded-xl w-full card-hover text-center relative">
-                        <div class="text-3xl font-bold text-brand-blue mb-2">1</div>
-                        <h4 class="font-bold text-lg mb-2">Documentación & Procesos</h4>
-                        <p class="text-sm text-gray-500">Estandarización de guiones, objeciones y flujos de venta.</p>
-                    </div>
+<div class="divider max-w-4xl mx-auto"></div>
 
-                    <!-- Connector Desktop -->
-                    <div class="hidden md:block text-brand-blue text-4xl font-bold">→</div>
-                    <!-- Connector Mobile -->
-                    <div class="md:hidden arrow-down"></div>
+<!-- ====================== 9. FAQ ====================== -->
+<section class="relative py-24 px-4 overflow-hidden">
+  <div class="max-w-4xl mx-auto relative z-10">
+    <div class="text-center mb-16">
+      <p data-aos="fade-up" class="text-brand-yellow font-bold uppercase tracking-widest text-sm mb-3">Preguntas frecuentes</p>
+      <h2 data-aos="fade-up" data-aos-delay="100" class="text-4xl md:text-6xl font-extrabold mb-4">
+        Lo que <span class="text-gradient">otros preguntan</span>
+      </h2>
+    </div>
 
-                    <!-- Step 2 -->
-                    <div class="flex-1 bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 p-6 rounded-xl w-full card-hover text-center relative shadow-lg transform scale-105">
-                        <div class="absolute -top-3 -right-3 bg-brand-accent text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">CORE</div>
-                        <div class="text-3xl font-bold text-brand-blue mb-2">2</div>
-                        <h4 class="font-bold text-lg mb-2">Herramientas & Agentes IA</h4>
-                        <p class="text-sm text-gray-600">Implementación de CRM y Bots inteligentes para atención inmediata.</p>
-                    </div>
+    <div class="space-y-4">
+      <details data-aos="fade-up" class="faq-item glass rounded-2xl p-6">
+        <summary class="font-heading font-bold text-lg">¿Cuánto cuesta implementar el SAV?</summary>
+        <p class="mt-4 text-brand-light/70">El SAV se cotiza por proyecto según tu industria, volumen de leads y complejidad del proceso comercial. Pide tu diagnóstico gratuito y te entregamos cotización personalizada en 48 horas.</p>
+      </details>
+      <details data-aos="fade-up" data-aos-delay="50" class="faq-item glass rounded-2xl p-6">
+        <summary class="font-heading font-bold text-lg">¿En cuánto tiempo veo resultados reales?</summary>
+        <p class="mt-4 text-brand-light/70">El SAV opera completo a los 60 días. El tiempo de respuesta mejora desde el día 15 (cuando el Asistente Comercial entra en producción). Las métricas de conversión empiezan a verse a partir de la semana 6, dependiendo del ciclo de venta de tu industria.</p>
+      </details>
+      <details data-aos="fade-up" data-aos-delay="100" class="faq-item glass rounded-2xl p-6">
+        <summary class="font-heading font-bold text-lg">¿Y si ya tengo CRM?</summary>
+        <p class="mt-4 text-brand-light/70">Mejor. Trabajamos con HubSpot, Pipedrive, Salesforce, Zoho y sistemas a medida. Lo configuramos como tu fuente única de información y lo conectamos al Asistente Comercial. Si tu CRM actual no soporta el flujo, evaluamos migración.</p>
+      </details>
+      <details data-aos="fade-up" data-aos-delay="150" class="faq-item glass rounded-2xl p-6">
+        <summary class="font-heading font-bold text-lg">¿El Asistente Comercial reemplaza a mi equipo de ventas?</summary>
+        <p class="mt-4 text-brand-light/70">No. El Asistente Comercial responde, califica y captura información. Tu equipo humano (o tú mismo si trabajas solo) cierra. Es un multiplicador, no un sustituto. Siempre hay transferencia a una persona cuando el prospecto está listo.</p>
+      </details>
+      <details data-aos="fade-up" data-aos-delay="200" class="faq-item glass rounded-2xl p-6">
+        <summary class="font-heading font-bold text-lg">¿Qué pasa después de los 60 días?</summary>
+        <p class="mt-4 text-brand-light/70">Te entregamos el sistema funcionando + documentación operativa + entrenamiento del equipo. Luego puedes operarlo con tu equipo o contratar nuestro servicio de mantenimiento mensual (opcional).</p>
+      </details>
+      <details data-aos="fade-up" data-aos-delay="250" class="faq-item glass rounded-2xl p-6">
+        <summary class="font-heading font-bold text-lg">¿Qué tan personalizado es el Asistente Comercial?</summary>
+        <p class="mt-4 text-brand-light/70">Cada Asistente Comercial se entrena con tu tono de marca, tu cliente ideal, tus productos/servicios, las objeciones típicas y tu metodología comercial. Es tuyo, no un bot genérico.</p>
+      </details>
+    </div>
+  </div>
+</section>
 
-                    <!-- Connector Desktop -->
-                    <div class="hidden md:block text-brand-blue text-4xl font-bold">→</div>
-                    <!-- Connector Mobile -->
-                    <div class="md:hidden arrow-down"></div>
+<!-- ====================== 11. CTA FINAL ====================== -->
+<section class="relative py-32 px-4 overflow-hidden gradient-mesh">
+  <div class="blob bg-brand-yellow w-[500px] h-[500px] -top-40 left-1/4"></div>
+  <div class="max-w-4xl mx-auto relative z-10 text-center">
+    <p data-aos="fade-up" class="text-brand-yellow font-bold uppercase tracking-widest text-sm mb-4">El siguiente paso</p>
+    <h2 data-aos="fade-up" data-aos-delay="100" class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
+      Tu próximo prospecto está<br>
+      <span class="text-gradient">por escribirte.</span>
+    </h2>
+    <p data-aos="fade-up" data-aos-delay="200" class="text-xl text-brand-light/80 mb-10 max-w-2xl mx-auto">
+      ¿Lo vas a atender en horas o en segundos? Empieza con un diagnóstico gratuito de 3 minutos y descubre el potencial real de tu operación comercial.
+    </p>
+    <div data-aos="fade-up" data-aos-delay="300" class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="diagnostico.html"
+         class="btn-shine bg-brand-yellow hover:bg-yellow-300 text-brand-navy font-bold py-4 px-8 rounded-full shadow-2xl text-lg transition transform hover:-translate-y-1 animate-glow">
+        🔍 Pide tu Diagnóstico Gratuito
+      </a>
+      <a href="https://wa.me/+573151209285" target="_blank" rel="noopener"
+         class="border-2 border-brand-yellow text-brand-yellow hover:bg-brand-yellow hover:text-brand-navy font-bold py-4 px-8 rounded-full text-lg transition transform hover:-translate-y-1">
+        Hablar por WhatsApp →
+      </a>
+    </div>
+  </div>
+</section>
 
-                    <!-- Step 3 -->
-                    <div class="flex-1 bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 p-6 rounded-xl w-full card-hover text-center relative">
-                        <div class="text-3xl font-bold text-brand-purple mb-2">3</div>
-                        <h4 class="font-bold text-lg mb-2">Datos & Análisis</h4>
-                        <p class="text-sm text-gray-500">Dashboards en tiempo real para decisiones estratégicas.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+<!-- ====================== 12. FOOTER ====================== -->
+<footer class="relative py-16 px-4 border-t border-brand-teal/30">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid md:grid-cols-4 gap-8 mb-12">
+      <div>
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-yellow to-brand-teal flex items-center justify-center font-heading font-extrabold text-brand-navy text-lg">P</div>
+          <span class="font-heading font-bold">Potenc<span class="text-brand-yellow">IA</span></span>
+        </div>
+        <p class="text-brand-light/60 text-sm">IA aplicada al crecimiento de negocios reales.</p>
+        <p class="text-brand-light/40 text-xs mt-3">ISO 9001:2015</p>
+      </div>
+      <div>
+        <h4 class="font-heading font-bold mb-3">Producto</h4>
+        <ul class="space-y-2 text-sm text-brand-light/70">
+          <li><a href="#sav" class="hover:text-brand-yellow transition">El SAV</a></li>
+          <li><a href="#metodologia" class="hover:text-brand-yellow transition">Metodología</a></li>
+          <li><a href="#casos" class="hover:text-brand-yellow transition">Casos de éxito</a></li>
+          <li><a href="diagnostico.html" class="hover:text-brand-yellow transition">Diagnóstico Gratuito</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-heading font-bold mb-3">Contacto</h4>
+        <ul class="space-y-2 text-sm text-brand-light/70">
+          <li><a href="https://wa.me/+573151209285" target="_blank" class="hover:text-brand-yellow transition">📲 WhatsApp</a></li>
+          <li><a href="mailto:gerencia@potenciaempresarial.site" class="hover:text-brand-yellow transition">✉️ gerencia@potenciaempresarial.site</a></li>
+          <li><span>🇨🇴 Colombia</span></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-heading font-bold mb-3">Legal</h4>
+        <ul class="space-y-2 text-sm text-brand-light/70">
+          <li><a href="#" class="hover:text-brand-yellow transition">Política de Privacidad</a></li>
+          <li><a href="#" class="hover:text-brand-yellow transition">Términos de Servicio</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="pt-8 border-t border-brand-teal/20 text-center text-sm text-brand-light/50">
+      &copy; 2026 PotencIA Empresarial · potenciaempresarial.site · Todos los derechos reservados
+    </div>
+  </div>
+</footer>
 
-        <!-- CHART: MANUAL VS AUTOMATED (Efficiency) -->
-        <section class="md:col-span-1 bg-white rounded-2xl shadow-md p-6 flex flex-col">
-            <div class="mb-4">
-                <h3 class="text-xl font-bold text-brand-dark">Impacto en la Gestión</h3>
-                <p class="text-sm text-gray-500 mt-2">
-                    Comparamos un proceso de ventas tradicional contra la implementación del SAV. La reducción en tiempos de respuesta es crítica para la conversión de leads digitales.
-                </p>
-            </div>
-            <div class="chart-container flex-grow">
-                <canvas id="comparisonChart"></canvas>
-            </div>
-        </section>
+<!-- ====================== FLOATING BUTTONS ====================== -->
+<!-- WhatsApp flotante -->
+<a id="wa-float"
+   href="https://wa.me/+573151209285?text=Hola%2C%20vi%20su%20p%C3%A1gina%20y%20quiero%20saber%20m%C3%A1s%20sobre%20el%20SAV"
+   target="_blank" rel="noopener"
+   title="Hablar por WhatsApp"
+   class="fixed bottom-6 right-6 z-50 w-14 h-14 bg-green-500 hover:bg-green-400 rounded-full flex items-center justify-center shadow-2xl">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" class="w-7 h-7">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+  </svg>
+</a>
 
-        <!-- CHART: SALES FUNNEL (Conversion) -->
-        <section class="md:col-span-1 bg-white rounded-2xl shadow-md p-6 flex flex-col">
-            <div class="mb-4">
-                <h3 class="text-xl font-bold text-brand-dark">El Funnel Inteligente</h3>
-                <p class="text-sm text-gray-500 mt-2">
-                    Integrando Meta Ads con nuestro CRM, filtramos la calidad. No buscamos solo "likes", buscamos ventas cerradas. El SAV cualifica automáticamente.
-                </p>
-            </div>
-            <div class="chart-container flex-grow">
-                <canvas id="funnelChart"></canvas>
-            </div>
-        </section>
+<!-- Scroll to top -->
+<button id="scrollTop"
+   onclick="window.scrollTo({top:0,behavior:'smooth'})"
+   title="Volver arriba"
+   class="fixed bottom-6 left-6 z-50 w-12 h-12 bg-brand-teal/70 hover:bg-brand-teal rounded-full flex items-center justify-center shadow-xl">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" class="w-5 h-5">
+    <path d="M12 5l-7 7h4v7h6v-7h4z"/>
+  </svg>
+</button>
 
-        <!-- CHART: GROWTH & ROI (Trend) -->
-        <section class="md:col-span-2 bg-white rounded-2xl shadow-md p-6">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-                <div class="max-w-2xl">
-                    <h3 class="text-2xl font-bold text-brand-dark">Crecimiento Sostenido (Año 1)</h3>
-                    <p class="text-gray-600 mt-2">
-                        Durante nuestro año de operación pre-lanzamiento, hemos optimizado la inversión publicitaria. 
-                        El gráfico muestra cómo el costo de adquisición disminuye mientras los ingresos escalan gracias a la optimización de datos.
-                    </p>
-                </div>
-                <div class="mt-4 md:mt-0 bg-blue-50 px-4 py-2 rounded-lg border border-blue-100">
-                    <span class="block text-xs text-gray-500 uppercase font-bold">ROI Promedio</span>
-                    <span class="block text-2xl font-bold text-brand-blue text-right">350%</span>
-                </div>
-            </div>
-            <div class="chart-container w-full">
-                <canvas id="roiChart"></canvas>
-            </div>
-        </section>
+<script>
+  // INIT AOS
+  AOS.init({ duration: 800, once: true, offset: 80 });
 
-        <!-- TIMELINE SECTION -->
-        <section class="md:col-span-1">
-            <h3 class="text-2xl font-bold text-brand-dark mb-6">Nuestra Trayectoria</h3>
-            <div class="bg-white rounded-2xl shadow-md p-8 relative">
-                <!-- Vertical Line -->
-                <div class="absolute left-10 top-8 bottom-8 w-1 bg-gray-200"></div>
+  // SCROLL PROGRESS BAR + SCROLL-TO-TOP
+  const progress = document.getElementById('scrollProgress');
+  const scrollTopBtn = document.getElementById('scrollTop');
+  window.addEventListener('scroll', () => {
+    const scrolled = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    progress.style.width = scrolled + '%';
+    // Mostrar/ocultar scroll-to-top
+    if (window.scrollY > 450) scrollTopBtn.classList.add('visible');
+    else scrollTopBtn.classList.remove('visible');
+  });
 
-                <!-- Item 1 -->
-                <div class="relative pl-12 mb-8 group">
-                    <div class="absolute left-0 top-1 w-6 h-6 bg-brand-blue rounded-full border-4 border-white shadow-sm z-10"></div>
-                    <span class="text-xs font-bold text-brand-purple bg-purple-50 px-2 py-1 rounded mb-1 inline-block">Inicio</span>
-                    <h4 class="font-bold text-lg">Génesis de PotencIA</h4>
-                    <p class="text-sm text-gray-500">Definición de visión y desarrollo de la arquitectura del SAV.</p>
-                </div>
-
-                <!-- Item 2 -->
-                <div class="relative pl-12 mb-8 group">
-                    <div class="absolute left-0 top-1 w-6 h-6 bg-white border-4 border-brand-blue rounded-full shadow-sm z-10"></div>
-                    <span class="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded mb-1 inline-block">Mes 3-6</span>
-                    <h4 class="font-bold text-lg">Validación & Primeros Clientes</h4>
-                    <p class="text-sm text-gray-500">Implementación beta. Recolección de datos y testimonios clave.</p>
-                </div>
-
-                <!-- Item 3 -->
-                <div class="relative pl-12 mb-8 group">
-                    <div class="absolute left-0 top-1 w-6 h-6 bg-white border-4 border-brand-blue rounded-full shadow-sm z-10"></div>
-                    <span class="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded mb-1 inline-block">Mes 9-11</span>
-                    <h4 class="font-bold text-lg">Optimización con IA</h4>
-                    <p class="text-sm text-gray-500">Integración profunda de Agentes de IA y analítica predictiva.</p>
-                </div>
-
-                <!-- Item 4 -->
-                <div class="relative pl-12 group">
-                    <div class="absolute left-0 top-1 w-6 h-6 bg-brand-accent rounded-full border-4 border-white shadow-lg z-10 animate-pulse"></div>
-                    <span class="text-xs font-bold text-brand-accent bg-amber-50 px-2 py-1 rounded mb-1 inline-block">HOY</span>
-                    <h4 class="font-bold text-lg">Lanzamiento Oficial</h4>
-                    <p class="text-sm text-gray-500">Presentamos el SAV maduro al mercado global.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- KPI SUMMARY -->
-        <section class="md:col-span-1 flex flex-col gap-6">
-            <h3 class="text-2xl font-bold text-brand-dark mb-0">Resultados Clave</h3>
-            
-            <div class="bg-brand-blue text-white rounded-2xl shadow-lg p-6 flex items-center justify-between transform transition hover:scale-105">
-                <div>
-                    <p class="text-blue-200 text-sm font-semibold uppercase">Tasa de Respuesta</p>
-                    <p class="text-3xl font-bold">Inmediata</p>
-                    <p class="text-xs text-blue-100 mt-1">Con Agentes IA (vs 4h promedio humano)</p>
-                </div>
-                <div class="text-4xl opacity-50">⚡</div>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col justify-center h-full">
-                 <div class="mb-2">
-                    <h4 class="font-bold text-gray-700">Satisfacción del Cliente</h4>
-                    <p class="text-xs text-gray-400">Basado en encuestas post-venta</p>
-                 </div>
-                 <div class="chart-container h-48 md:h-56">
-                    <canvas id="satisfactionChart"></canvas>
-                 </div>
-            </div>
-        </section>
-
-        <!-- FOOTER / CTA -->
-        <footer class="md:col-span-2 bg-gray-900 text-white rounded-2xl p-10 text-center mt-8">
-            <h2 class="text-3xl font-bold mb-4">¿Listo para potenciar tu empresa?</h2>
-            <p class="text-gray-400 mb-8 max-w-2xl mx-auto">
-                Deja de perder leads por falta de gestión. Adopta el Sistema Automatizado de Ventas y entra en la nueva era de los datos.
-            </p>
-            <button class="bg-brand-accent hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:-translate-y-1">
-                Agenda una Demo del SAV
-            </button>
-            <div class="mt-8 pt-8 border-t border-gray-800 text-sm text-gray-500">
-                &copy; 2024 PotencIA Empresarial. Todos los derechos reservados.
-            </div>
-        </footer>
-
-    </main>
-
-    <!-- CHART.JS CONFIGURATION -->
-    <script>
-        // --- HELPER: LABEL WRAPPING (16 CHAR LIMIT) ---
-        function splitLabel(label) {
-            if (label.length <= 16) return label;
-            const words = label.split(' ');
-            const lines = [];
-            let currentLine = words[0];
-
-            for (let i = 1; i < words.length; i++) {
-                if (currentLine.length + 1 + words[i].length <= 16) {
-                    currentLine += ' ' + words[i];
-                } else {
-                    lines.push(currentLine);
-                    currentLine = words[i];
-                }
-            }
-            lines.push(currentLine);
-            return lines;
-        }
-
-        // --- GLOBAL CHART DEFAULTS ---
-        Chart.defaults.font.family = "'Inter', sans-serif";
-        Chart.defaults.color = '#4B5563';
-        
-        // --- TOOLTIP CONFIGURATION (MANDATORY) ---
-        const commonTooltip = {
-            callbacks: {
-                title: function(tooltipItems) {
-                    const item = tooltipItems[0];
-                    let label = item.chart.data.labels[item.dataIndex];
-                    if (Array.isArray(label)) {
-                        return label.join(' ');
-                    } else {
-                        return label;
-                    }
-                }
-            }
+  // ANIMATED COUNTERS
+  const counters = document.querySelectorAll('.count');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !entry.target.dataset.done) {
+        const target = parseInt(entry.target.dataset.target);
+        const duration = 1500;
+        const start = performance.now();
+        const animate = (now) => {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const ease = 1 - Math.pow(1 - progress, 3);
+          entry.target.textContent = Math.floor(target * ease);
+          if (progress < 1) requestAnimationFrame(animate);
+          else entry.target.textContent = target;
         };
+        requestAnimationFrame(animate);
+        entry.target.dataset.done = '1';
+      }
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(c => observer.observe(c));
 
-        // 1. COMPARISON CHART (Bar)
-        const ctxComp = document.getElementById('comparisonChart').getContext('2d');
-        new Chart(ctxComp, {
-            type: 'bar',
-            data: {
-                labels: ['Tiempo Respuesta (Min)', 'Leads Perdidos (%)', 'Conversión Final (%)'].map(splitLabel),
-                datasets: [
-                    {
-                        label: 'Proceso Manual',
-                        data: [240, 65, 2], // 240 mins (4 hours), 65% loss, 2% conversion
-                        backgroundColor: '#9CA3AF', // Gray
-                        borderRadius: 4
-                    },
-                    {
-                        label: 'Sistema SAV (IA)',
-                        data: [1, 15, 8], // 1 min, 15% loss, 8% conversion
-                        backgroundColor: '#2563EB', // Brand Blue
-                        borderRadius: 4
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom' },
-                    tooltip: commonTooltip
-                },
-                scales: {
-                    y: { beginAtZero: true }
-                }
-            }
-        });
+  // HAMBURGER MOBILE MENU
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  let menuOpen = false;
 
-        // 2. FUNNEL CHART (Horizontal Bar simulation)
-        const ctxFunnel = document.getElementById('funnelChart').getContext('2d');
-        new Chart(ctxFunnel, {
-            type: 'bar',
-            indexAxis: 'y', // Horizontal
-            data: {
-                labels: ['Impresiones (Ads)', 'Clics en Anuncio', 'Leads Capturados', 'Leads Calificados', 'Ventas Cerradas'].map(splitLabel),
-                datasets: [{
-                    label: 'Flujo de Conversión',
-                    data: [10000, 2500, 800, 350, 120],
-                    backgroundColor: [
-                        'rgba(37, 99, 235, 0.2)', // Lightest Blue
-                        'rgba(37, 99, 235, 0.4)',
-                        'rgba(37, 99, 235, 0.6)',
-                        'rgba(37, 99, 235, 0.8)',
-                        '#F59E0B' // Amber for Sales (The Goal)
-                    ],
-                    borderColor: '#2563EB',
-                    borderWidth: 1,
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: commonTooltip
-                },
-                scales: {
-                    x: { display: false }, // Hide axis for cleaner funnel look
-                    y: { grid: { display: false } }
-                }
-            }
-        });
+  hamburger.addEventListener('click', () => {
+    menuOpen = !menuOpen;
+    hamburger.classList.toggle('open', menuOpen);
+    if (menuOpen) {
+      mobileMenu.style.transform = 'translateY(0)';
+    } else {
+      mobileMenu.style.transform = 'translateY(-110%)';
+    }
+  });
 
-        // 3. ROI CHART (Line/Area)
-        const ctxRoi = document.getElementById('roiChart').getContext('2d');
-        new Chart(ctxRoi, {
-            type: 'line',
-            data: {
-                labels: ['Q1: Inicio', 'Q2: Ajuste', 'Q3: Estandarización', 'Q4: Automatización'].map(splitLabel),
-                datasets: [
-                    {
-                        label: 'Ingresos Generados',
-                        data: [1200, 3500, 6800, 12500],
-                        borderColor: '#7C3AED', // Purple
-                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        borderWidth: 3
-                    },
-                    {
-                        label: 'Costo por Lead',
-                        data: [50, 45, 30, 18], // Cost goes down
-                        borderColor: '#F59E0B', // Amber
-                        backgroundColor: 'transparent',
-                        borderDash: [5, 5],
-                        yAxisID: 'y1',
-                        borderWidth: 2
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
-                plugins: {
-                    tooltip: commonTooltip,
-                    legend: { position: 'top' }
-                },
-                scales: {
-                    y: {
-                        type: 'linear',
-                        display: true,
-                        position: 'left',
-                        title: { display: true, text: 'Ingresos ($)' }
-                    },
-                    y1: {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        grid: { drawOnChartArea: false },
-                        title: { display: true, text: 'CPL ($)' }
-                    }
-                }
-            }
-        });
+  // Cerrar menú al hacer clic en cualquier enlace
+  mobileMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      menuOpen = false;
+      hamburger.classList.remove('open');
+      mobileMenu.style.transform = 'translateY(-110%)';
+    });
+  });
+</script>
 
-        // 4. SATISFACTION CHART (Doughnut)
-        const ctxSat = document.getElementById('satisfactionChart').getContext('2d');
-        new Chart(ctxSat, {
-            type: 'doughnut',
-            data: {
-                labels: ['Muy Satisfecho', 'Satisfecho', 'Neutral'].map(splitLabel),
-                datasets: [{
-                    data: [85, 12, 3],
-                    backgroundColor: [
-                        '#2563EB', // Blue
-                        '#7C3AED', // Purple
-                        '#E5E7EB'  // Gray
-                    ],
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    tooltip: commonTooltip,
-                    legend: { position: 'right' }
-                },
-                cutout: '70%'
-            }
-        });
-
-    </script>
 </body>
 </html>

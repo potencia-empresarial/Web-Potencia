@@ -1,0 +1,11 @@
+# Archivos de backend — Netlify solo sirve el frontend estático
+server.py
+server.js
+requirements.txt
+Procfile
+.env
+.env.example
+__pycache__/
+*.pyc
+index.v1.html.bak
+package.json
