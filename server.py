@@ -6,13 +6,22 @@ from flask_cors import CORS
 import anthropic
 from dotenv import dotenv_values
 
-env_path = Path(__file__).parent / '.env'
-_env = dotenv_values(dotenv_path=env_path)
-API_KEY = _env.get('ANTHROPIC_API_KEY') or os.environ.get('ANTHROPIC_API_KEY', '')
+# === API Key resolution (producción primero, .env como fallback dev) ===
+API_KEY = os.environ.get('ANTHROPIC_API_KEY', '').strip()
+if not API_KEY:
+    env_path = Path(__file__).parent / '.env'
+    if env_path.exists():
+        _env = dotenv_values(dotenv_path=env_path)
+        API_KEY = (_env.get('ANTHROPIC_API_KEY') or '').strip()
+
+if API_KEY:
+    print(f'✅ ANTHROPIC_API_KEY cargada (longitud: {len(API_KEY)} chars, prefijo: {API_KEY[:12]}...)')
+else:
+    print('❌ ANTHROPIC_API_KEY no encontrada — el endpoint /api/diagnostico fallará')
 
 app = Flask(__name__, static_folder='.')
 CORS(app, resources={r"/api/*": {"origins": "*"}})  # Permite llamadas desde cualquier frontend
-client = anthropic.Anthropic(api_key=API_KEY)
+client = anthropic.Anthropic(api_key=API_KEY) if API_KEY else None
 
 
 @app.route('/health')
@@ -33,6 +42,12 @@ def static_files(filename):
 
 @app.route('/api/diagnostico', methods=['POST'])
 def diagnostico():
+    if client is None:
+        return jsonify({
+            'ok': False,
+            'error': 'Configuración del servidor incompleta — falta ANTHROPIC_API_KEY. Contacta al administrador.'
+        }), 500
+
     datos = request.get_json()
 
     redes = ', '.join(datos.get('redesSociales', [])) or 'Ninguna'
