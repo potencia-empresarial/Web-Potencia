@@ -353,14 +353,33 @@
 
     </form>
 
-    <!-- ESTADO: CARGANDO -->
-    <div id="loadingSection" class="hidden text-center py-20">
-      <div class="inline-block w-16 h-16 border-4 border-brand-teal border-t-transparent rounded-full spin mb-6"></div>
-      <h3 class="text-2xl font-bold text-brand-navy mb-2">Analizando tu empresa...</h3>
-      <p class="text-gray-500">La IA está procesando tu diagnóstico y generando recomendaciones personalizadas.</p>
-    </div>
-
   </main>
+
+  <!-- ESTADO: CARGANDO (overlay a pantalla completa) -->
+  <div id="loadingSection" class="hidden fixed inset-0 z-50 bg-brand-navy flex items-center justify-center px-4">
+    <div class="max-w-xl w-full text-center text-white">
+      <!-- Isotipo pulsante -->
+      <div class="relative inline-block mb-8">
+        <div class="absolute inset-0 bg-brand-yellow/30 rounded-full blur-3xl animate-pulse"></div>
+        <div class="relative w-24 h-24 mx-auto bg-brand-teal/20 rounded-full flex items-center justify-center border-4 border-brand-yellow">
+          <div class="w-12 h-12 border-4 border-brand-yellow border-t-transparent rounded-full spin"></div>
+        </div>
+      </div>
+
+      <p class="text-brand-yellow font-bold uppercase tracking-widest text-xs mb-3">Generando tu diagnóstico</p>
+      <h3 id="loadingTitulo" class="text-3xl md:text-4xl font-bold mb-4">Analizando los datos de tu empresa...</h3>
+      <p class="text-brand-light/80 text-lg mb-2">Esto puede tomar entre <span class="text-brand-yellow font-bold">15 y 30 segundos</span>.</p>
+      <p class="text-brand-light/60 text-sm">Estamos procesando con IA tu información para generar recomendaciones personalizadas.</p>
+
+      <!-- Barra de progreso animada -->
+      <div class="mt-8 max-w-md mx-auto">
+        <div class="w-full bg-brand-navy/50 rounded-full h-2 overflow-hidden border border-brand-teal/30">
+          <div id="loadingBar" class="h-2 bg-gradient-to-r from-brand-yellow to-brand-teal" style="width:0%; transition: width 0.5s ease;"></div>
+        </div>
+        <p id="loadingMensaje" class="text-brand-light/50 text-xs mt-3 italic">Conectando con la IA...</p>
+      </div>
+    </div>
+  </div>
 
   <!-- REPORTE GENERADO -->
   <div id="reporteSection" class="hidden max-w-4xl mx-auto px-4 py-10">
@@ -388,6 +407,7 @@
             <h1 class="text-3xl md:text-4xl font-extrabold mb-2">Diagnóstico de Madurez IA</h1>
             <p id="rptEmpresa" class="text-brand-light text-lg"></p>
             <p id="rptFecha" class="text-brand-yellow text-sm mt-1"></p>
+            <div id="rptPersona"></div>
           </div>
           <!-- SCORE CIRCLE -->
           <div class="text-center">
@@ -524,10 +544,52 @@
         if (!Array.isArray(datos[k])) datos[k] = [datos[k]];
       });
 
-      document.getElementById('formSection').classList.add('hidden');
-      document.getElementById('loadingSection').classList.remove('hidden');
-      document.getElementById('loadingSection').classList.remove('hidden');
-      document.getElementById('loadingSection').parentElement.classList.remove('hidden');
+      // VALIDACIÓN ESTRICTA — nombre y correo obligatorios
+      const nombre = (datos.nombre || '').trim();
+      const correo = (datos.correo || '').trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (nombre.length < 2) {
+        alert('Por favor escribe tu nombre completo. Es necesario para personalizar tu reporte.');
+        document.querySelector('[name="nombre"]')?.focus();
+        return;
+      }
+      if (!emailRegex.test(correo)) {
+        alert('Por favor escribe un correo válido. Lo necesitamos para identificarte y poder enviarte el reporte.');
+        document.querySelector('[name="correo"]')?.focus();
+        return;
+      }
+      datos.nombre = nombre;
+      datos.correo = correo;
+
+      // === UX MEJORADA: overlay a pantalla completa + scroll bloqueado ===
+      const loading = document.getElementById('loadingSection');
+      const loadingTitulo = document.getElementById('loadingTitulo');
+      const loadingBar = document.getElementById('loadingBar');
+      const loadingMensaje = document.getElementById('loadingMensaje');
+
+      loadingTitulo.textContent = `Analizando los datos de ${nombre.split(' ')[0]}...`;
+      loading.classList.remove('hidden');
+      document.body.style.overflow = 'hidden'; // bloquea scroll de fondo
+      window.scrollTo({ top: 0, behavior: 'instant' });
+
+      // Animación de progreso (no representa el progreso real, solo da feedback visual)
+      const mensajes = [
+        'Conectando con la IA...',
+        'Analizando presencia digital...',
+        'Evaluando nivel de automatización...',
+        'Calculando madurez en datos...',
+        'Identificando oportunidades de IA...',
+        'Generando plan de acción a 90 días...',
+        'Casi listo, ajustando recomendaciones...'
+      ];
+      let paso = 0;
+      const progresoInterval = setInterval(() => {
+        if (paso < mensajes.length) {
+          loadingMensaje.textContent = mensajes[paso];
+          loadingBar.style.width = `${Math.min(((paso + 1) / mensajes.length) * 90, 90)}%`;
+          paso++;
+        }
+      }, 3500);
 
       try {
         const res = await fetch('/api/diagnostico', {
@@ -536,22 +598,43 @@
           body: JSON.stringify(datos)
         });
         const json = await res.json();
+        clearInterval(progresoInterval);
+        loadingBar.style.width = '100%';
+        loadingMensaje.textContent = '¡Listo! Mostrando tu reporte...';
         if (!json.ok) throw new Error(json.error);
-        renderReporte(json.resultado, datos);
+        setTimeout(() => {
+          renderReporte(json.resultado, datos);
+          document.body.style.overflow = ''; // restaura scroll
+        }, 600);
       } catch (err) {
-        document.getElementById('loadingSection').classList.add('hidden');
+        clearInterval(progresoInterval);
+        document.body.style.overflow = '';
+        loading.classList.add('hidden');
         document.getElementById('formSection').classList.remove('hidden');
-        alert('Ocurrió un error: ' + err.message);
+        alert('Ocurrió un error generando tu diagnóstico: ' + err.message + '\n\nPor favor intenta de nuevo en unos segundos.');
       }
     });
 
+    // Guarda los datos del usuario en una variable global para usarlos en el PDF filename
+    let datosUsuarioActual = null;
+
     function renderReporte(r, datos) {
+      datosUsuarioActual = datos;
       document.getElementById('loadingSection').classList.add('hidden');
       document.getElementById('formSection').classList.add('hidden');
 
       // Datos básicos
       document.getElementById('rptEmpresa').textContent = datos.empresa + ' · ' + datos.industria;
       document.getElementById('rptFecha').textContent = 'Generado el ' + new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      // Personalización con nombre + correo
+      const rptPersona = document.getElementById('rptPersona');
+      if (rptPersona) {
+        rptPersona.innerHTML = `
+          <p class="text-brand-light/90 text-sm mt-2">Reporte personalizado para <strong class="text-white">${datos.nombre}</strong></p>
+          <p class="text-brand-light/60 text-xs">${datos.correo}</p>
+        `;
+      }
       document.getElementById('scoreNum').textContent = r.score;
       document.getElementById('scoreNivel').textContent = r.nivel;
       document.getElementById('rptDescripcion').textContent = r.descripcionNivel;
@@ -629,15 +712,48 @@
 
     function descargarPDF() {
       const elemento = document.getElementById('reporteContenido');
-      const empresa = document.getElementById('rptEmpresa').textContent.split('·')[0].trim().replace(/\s+/g, '_');
+      const empresa = (datosUsuarioActual?.empresa || 'Empresa').trim().replace(/[^a-zA-Z0-9]/g, '_');
+      const nombre = (datosUsuarioActual?.nombre || '').trim().split(' ')[0].replace(/[^a-zA-Z]/g, '');
+      const fecha = new Date().toISOString().slice(0, 10);
+      const filename = nombre
+        ? `Diagnostico_IA_${empresa}_${nombre}_${fecha}.pdf`
+        : `Diagnostico_IA_${empresa}_${fecha}.pdf`;
+
+      // Mostrar indicador de generación
+      const btn = event?.target?.closest('button');
+      const txtOriginal = btn?.innerHTML;
+      if (btn) {
+        btn.innerHTML = '⏳ Generando PDF nítido...';
+        btn.disabled = true;
+      }
+
       const opt = {
-        margin: [10, 10, 10, 10],
-        filename: `Diagnostico_IA_${empresa}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        margin: [12, 10, 12, 10],
+        filename: filename,
+        image: { type: 'jpeg', quality: 1.0 },          // calidad máxima
+        html2canvas: {
+          scale: 3,                                       // ← 50% más nítido que antes (scale 2)
+          useCORS: true,
+          letterRendering: true,                          // mejor renderizado de texto
+          allowTaint: false,
+          backgroundColor: '#F2F2F2',
+          windowWidth: 1200                               // ancho fijo para consistencia
+        },
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait',
+          compress: true
+        },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // evita cortes feos
       };
-      html2pdf().set(opt).from(elemento).save();
+
+      html2pdf().set(opt).from(elemento).save().then(() => {
+        if (btn) {
+          btn.innerHTML = txtOriginal;
+          btn.disabled = false;
+        }
+      });
     }
 
     function reiniciar() {

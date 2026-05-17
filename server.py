@@ -147,6 +147,9 @@ Genera el análisis ÚNICAMENTE como JSON puro (sin markdown, sin explicaciones,
   "mensajeFinal": "<2-3 oraciones motivadoras y específicas para esta empresa>"
 }}"""
 
+    from datetime import datetime
+    inicio = datetime.now()
+
     try:
         message = client.messages.create(
             model='claude-sonnet-4-6',
@@ -157,9 +160,36 @@ Genera el análisis ÚNICAMENTE como JSON puro (sin markdown, sin explicaciones,
         start = raw.find('{')
         end = raw.rfind('}') + 1
         resultado = json.loads(raw[start:end])
+
+        # === LOG ESTRUCTURADO — cada diagnóstico queda registrado en Render Logs ===
+        duracion = (datetime.now() - inicio).total_seconds()
+        log_lead = {
+            'timestamp': inicio.isoformat(),
+            'tipo': 'DIAGNOSTICO_NUEVO',
+            'lead': {
+                'nombre': datos.get('nombre'),
+                'correo': datos.get('correo'),
+                'empresa': datos.get('empresa'),
+                'industria': datos.get('industria'),
+                'empleados': datos.get('empleados'),
+                'facturacion': datos.get('facturacion'),
+            },
+            'resultado': {
+                'score': resultado.get('score'),
+                'nivel': resultado.get('nivel'),
+            },
+            'metrica_tecnica': {
+                'duracion_seg': round(duracion, 2),
+                'tokens_input': message.usage.input_tokens,
+                'tokens_output': message.usage.output_tokens,
+                'costo_usd_aprox': round((message.usage.input_tokens * 3 + message.usage.output_tokens * 15) / 1_000_000, 4),
+            }
+        }
+        print(f'📊 LEAD CAPTURADO: {json.dumps(log_lead, ensure_ascii=False)}', flush=True)
+
         return jsonify({'ok': True, 'resultado': resultado})
     except Exception as e:
-        print(f'Error: {e}')
+        print(f'❌ ERROR en diagnostico para {datos.get("correo", "?")}: {e}', flush=True)
         return jsonify({'ok': False, 'error': str(e)}), 500
 
 
