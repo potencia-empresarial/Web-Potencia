@@ -594,24 +594,66 @@
       try {
         const res = await fetch('/api/diagnostico', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          },
+          cache: 'no-store',
           body: JSON.stringify(datos)
         });
-        const json = await res.json();
+
+        // Lee el body como TEXTO primero (más robusto en Safari iOS).
+        // Si el JSON.parse falla, podemos loguear el texto crudo para debug.
+        const responseText = await res.text();
+        let json;
+        try {
+          json = JSON.parse(responseText);
+        } catch (parseErr) {
+          console.error('[diagnostico] JSON parse falló', {
+            status: res.status,
+            statusText: res.statusText,
+            contentType: res.headers.get('content-type'),
+            bodyLength: responseText.length,
+            bodyPreview: responseText.substring(0, 500),
+            error: parseErr.message
+          });
+          throw new Error('La respuesta del servidor no es válida. Tu lead se guardó — te contactaremos pronto.');
+        }
+
         clearInterval(progresoInterval);
         loadingBar.style.width = '100%';
         loadingMensaje.textContent = '¡Listo! Mostrando tu reporte...';
-        if (!json.ok) throw new Error(json.error);
+
+        if (!json.ok) {
+          console.error('[diagnostico] Backend devolvió error:', json);
+          throw new Error(json.error || 'Error desconocido');
+        }
+
+        // Render dentro de try/catch propio para no perder errores en setTimeout
         setTimeout(() => {
-          renderReporte(json.resultado, datos);
-          document.body.style.overflow = ''; // restaura scroll
+          try {
+            renderReporte(json.resultado, datos);
+            document.body.style.overflow = '';
+          } catch (renderErr) {
+            console.error('[diagnostico] Error renderizando reporte:', renderErr, json.resultado);
+            document.body.style.overflow = '';
+            loading.classList.add('hidden');
+            document.getElementById('formSection').classList.remove('hidden');
+            alert('Tu diagnóstico se generó correctamente y tu lead se guardó. Pero hubo un problema mostrándolo en pantalla. Te contactaremos pronto con el reporte completo.\n\nDetalle técnico: ' + renderErr.message);
+          }
         }, 600);
       } catch (err) {
         clearInterval(progresoInterval);
         document.body.style.overflow = '';
         loading.classList.add('hidden');
         document.getElementById('formSection').classList.remove('hidden');
-        alert('Ocurrió un error generando tu diagnóstico: ' + err.message + '\n\nPor favor intenta de nuevo en unos segundos.');
+        console.error('[diagnostico] Error en flujo principal:', err);
+        // Mensaje amigable + reconocimiento de que el lead SÍ se guardó
+        const userMsg = err.message.includes('Tu lead se guardó')
+          ? err.message
+          : 'Hubo un problema mostrando tu diagnóstico en pantalla, pero tu información se guardó correctamente. Te contactaremos pronto.\n\nSi quieres reintentar: ' + err.message;
+        alert(userMsg);
       }
     });
 
