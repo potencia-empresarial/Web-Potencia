@@ -2,11 +2,13 @@
   publish = "."
 
 # Redirige el subdomain de Netlify al dominio oficial (SEO + branding)
+# Usa "conditions" para hacer match por hostname (sintaxis correcta de Netlify)
 [[redirects]]
-  from = "https://potenciaempresarial.netlify.app/*"
+  from = "/*"
   to = "https://potenciaempresarial.site/:splat"
   status = 301
   force = true
+  conditions = {Host = ["potenciaempresarial.netlify.app"]}
 
 # Proxy para el backend de Render
 [[redirects]]
