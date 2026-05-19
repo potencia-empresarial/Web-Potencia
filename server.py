@@ -28,16 +28,19 @@ if API_KEY:
 else:
     print('❌ ANTHROPIC_API_KEY no encontrada — el endpoint /api/diagnostico fallará')
 
-# === PANCAKE CRM v2 — integración para persistencia de leads ===
+# === PANCAKE CRM — integración para persistencia de leads ===
+# Endpoint confirmado (mayo 2026):
+#   POST https://pos.pages.fm/api/v1/shops/{SHOP_ID}/crm/{TABLE_NAME}/records?api_key={KEY}
+# Donde SHOP_ID = workspace ID que aparece en la URL del panel Pancake CRM (4851 para PotencIA).
 PANCAKE_API_KEY = _get_env_var('PANCAKE_API_KEY')
-PANCAKE_WORKSPACE_ID = _get_env_var('PANCAKE_WORKSPACE_ID', '4851')
-# Base URL Pancake CRM v2. Confirmar el path exacto del endpoint en docs.pancake.vn.
-PANCAKE_API_BASE = _get_env_var('PANCAKE_API_BASE', 'https://crm.pancake.vn/api/v2')
-# Recurso del endpoint: customers, contacts, leads (varía según versión Pancake)
-PANCAKE_RESOURCE = _get_env_var('PANCAKE_RESOURCE', 'customers')
+PANCAKE_WORKSPACE_ID = _get_env_var('PANCAKE_WORKSPACE_ID', '4851')  # = SHOP_ID en la URL
+PANCAKE_API_BASE = _get_env_var('PANCAKE_API_BASE', 'https://pos.pages.fm/api/v1')
+# Nombre EXACTO de la tabla en el CRM (case-sensitive, se ve en CRM → Tablas).
+# Defaults comunes: 'Contact', 'Customer', 'Lead'. Override con PANCAKE_TABLE_NAME en Render.
+PANCAKE_TABLE_NAME = _get_env_var('PANCAKE_TABLE_NAME', 'Contact')
 
 if PANCAKE_API_KEY:
-    print(f'✅ PANCAKE_API_KEY cargada para workspace {PANCAKE_WORKSPACE_ID}')
+    print(f'✅ PANCAKE_API_KEY cargada → shop {PANCAKE_WORKSPACE_ID}, tabla "{PANCAKE_TABLE_NAME}"')
 else:
     print('⚠️  PANCAKE_API_KEY no configurada — los leads NO se enviarán a CRM (solo quedarán en logs)')
 
@@ -97,29 +100,29 @@ def enviar_lead_a_pancake(datos, resultado):
 {resultado.get('oportunidades', [{}])[0].get('titulo', 'N/A') if resultado.get('oportunidades') else 'N/A'}
 """
 
-    # Payload estándar de Pancake CRM para crear cliente/lead
+    # Payload Pancake CRM — usa PascalCase (convención de columnas en sus tablas custom).
+    # Los campos extra que no existan en la tabla del CRM son ignorados por la API.
+    # Si la tabla "Contact" tiene columnas con otros nombres, ajustar aquí.
     payload = {
-        'name': nombre_completo,
-        'first_name': primer_nombre,
-        'last_name': apellido,
-        'email': datos.get('correo', ''),
-        'company': datos.get('empresa', ''),
-        'industry': datos.get('industria', ''),
-        'source': 'diagnostico-web-express',
-        'tags': ['lead-diagnostico-web', f'nivel-{nivel.lower().replace(" ", "-")}', f'score-{score}'],
-        'notes': notas,
-        'custom_fields': {
-            'score_diagnostico': score,
-            'nivel_madurez': nivel,
-            'empleados_rango': datos.get('empleados', ''),
-            'facturacion_rango': datos.get('facturacion', ''),
-            'objetivo_principal': datos.get('objetivo', ''),
-            'desafio_principal': datos.get('desafio', ''),
-        },
+        'Name': nombre_completo,
+        'FirstName': primer_nombre,
+        'LastName': apellido,
+        'Email': datos.get('correo', ''),
+        'Company': datos.get('empresa', ''),
+        'Industry': datos.get('industria', ''),
+        'Source': 'diagnostico-web-express',
+        'Tags': ['lead-diagnostico-web', f'nivel-{nivel.lower().replace(" ", "-")}', f'score-{score}'],
+        'Notes': notas,
+        'Score': score,
+        'Level': nivel,
+        'Employees': datos.get('empleados', ''),
+        'Revenue': datos.get('facturacion', ''),
+        'Objective': datos.get('objetivo', ''),
+        'Challenge': datos.get('desafio', ''),
     }
 
-    # URL del endpoint Pancake CRM v2 — pasa API key como query param (patrón estándar Pancake)
-    url = f'{PANCAKE_API_BASE}/workspaces/{PANCAKE_WORKSPACE_ID}/{PANCAKE_RESOURCE}?api_key={PANCAKE_API_KEY}'
+    # Endpoint confirmado: /shops/{SHOP_ID}/crm/{TABLE_NAME}/records?api_key=...
+    url = f'{PANCAKE_API_BASE}/shops/{PANCAKE_WORKSPACE_ID}/crm/{PANCAKE_TABLE_NAME}/records?api_key={PANCAKE_API_KEY}'
 
     try:
         req = urllib.request.Request(
