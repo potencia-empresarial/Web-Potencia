@@ -1,14 +1,11 @@
 [build]
   publish = "."
 
-# Redirige el subdomain de Netlify al dominio oficial (SEO + branding)
-# Usa "conditions" para hacer match por hostname (sintaxis correcta de Netlify)
-[[redirects]]
-  from = "/*"
-  to = "https://potenciaempresarial.site/:splat"
-  status = 301
-  force = true
-  conditions = {Host = ["potenciaempresarial.netlify.app"]}
+# Nota sobre redirect del subdomain de Netlify:
+# Netlify NO permite redirigir el propio subdomain .netlify.app vía netlify.toml.
+# Sin embargo, Netlify añade automáticamente un <link rel="canonical"> apuntando
+# al primary domain (potenciaempresarial.site), que es la solución estándar para SEO.
+# Google y otros buscadores respetan el canonical y solo indexan el dominio oficial.
 
 # Proxy para el backend de Render
 [[redirects]]
