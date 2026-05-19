@@ -30,23 +30,27 @@ else:
     print('❌ ANTHROPIC_API_KEY no encontrada — el endpoint /api/diagnostico fallará')
 
 # === PANCAKE CRM v2 — integración para persistencia de leads ===
-# El panel del usuario está en https://crm.pancake.vn/v2/workspace/4961/lead
-# La URL del API se construye reflejando esa ruta. Si el endpoint exacto difiere,
-# se puede sobrescribir vía env var PANCAKE_API_URL sin tocar código.
+# KILL-SWITCH: PANCAKE_ENABLED='true' activa la integración. Default 'false' por seguridad.
+# Mientras no confirmemos el método de auth correcto de Pancake CRM v2 (api_key vs access_token
+# vs header), mantenemos la integración desactivada para no degradar el diagnóstico.
+# Los leads quedan en logs estructurados de Render aunque Pancake esté off.
+PANCAKE_ENABLED = _get_env_var('PANCAKE_ENABLED', 'false').lower() == 'true'
 PANCAKE_API_KEY = _get_env_var('PANCAKE_API_KEY')
 PANCAKE_WORKSPACE_ID = _get_env_var('PANCAKE_WORKSPACE_ID', '4961')
 PANCAKE_TABLE_NAME = _get_env_var('PANCAKE_TABLE_NAME', 'lead')
-# URL completa SIN ?api_key — el código se lo añade al final.
-# Default basado en patrón del UI; si Pancake usa otro endpoint, override en Render.
 PANCAKE_API_URL = _get_env_var(
     'PANCAKE_API_URL',
     f'https://crm.pancake.vn/api/v2/workspace/{PANCAKE_WORKSPACE_ID}/{PANCAKE_TABLE_NAME}'
 )
+# Timeout corto: si Pancake no responde en X seg, abortamos y NO bloqueamos al user.
+PANCAKE_TIMEOUT_SEG = int(_get_env_var('PANCAKE_TIMEOUT_SEG', '5'))
 
-if PANCAKE_API_KEY:
-    print(f'✅ PANCAKE_API_KEY cargada → POST {PANCAKE_API_URL}')
+if PANCAKE_ENABLED and PANCAKE_API_KEY:
+    print(f'✅ PANCAKE habilitado → POST {PANCAKE_API_URL} (timeout {PANCAKE_TIMEOUT_SEG}s)')
+elif PANCAKE_ENABLED and not PANCAKE_API_KEY:
+    print('⚠️  PANCAKE_ENABLED=true pero PANCAKE_API_KEY vacía — no se enviarán leads')
 else:
-    print('⚠️  PANCAKE_API_KEY no configurada — los leads NO se enviarán a CRM (solo quedarán en logs)')
+    print('🔌 PANCAKE desactivado (PANCAKE_ENABLED!=true). Leads solo en logs.')
 
 app = Flask(__name__, static_folder='.')
 CORS(app, resources={r"/api/*": {"origins": "*"}})  # Permite llamadas desde cualquier frontend
@@ -61,6 +65,8 @@ def enviar_lead_a_pancake(datos, resultado):
 
     Retorna: (ok: bool, mensaje: str)
     """
+    if not PANCAKE_ENABLED:
+        return False, 'PANCAKE_ENABLED=false (kill-switch activo)'
     if not PANCAKE_API_KEY:
         return False, 'PANCAKE_API_KEY no configurada'
 
@@ -139,7 +145,7 @@ def enviar_lead_a_pancake(datos, resultado):
             },
             method='POST',
         )
-        with urllib.request.urlopen(req, timeout=10) as resp:
+        with urllib.request.urlopen(req, timeout=PANCAKE_TIMEOUT_SEG) as resp:
             response_data = resp.read().decode('utf-8')
             print(f'✅ Lead enviado a Pancake CRM (HTTP {resp.status}): {response_data[:200]}', flush=True)
             return True, f'OK (HTTP {resp.status})'
@@ -318,22 +324,22 @@ Genera el análisis ÚNICAMENTE como JSON puro (sin markdown, sin explicaciones,
         print(f'📊 LEAD CAPTURADO: {json.dumps(log_lead, ensure_ascii=False)}', flush=True)
 
         # === ENVIAR A PANCAKE CRM EN BACKGROUND (POE-N-01 §2: no bloquear ruta crítica) ===
-        # Por qué async: el response al user sale YA, liberando memoria del request HTTP.
-        # Pancake corre en su propio thread; si falla, queda en logs sin afectar al user.
-        def _enviar_pancake_background(datos_snapshot, resultado_snapshot):
-            try:
-                crm_ok, crm_msg = enviar_lead_a_pancake(datos_snapshot, resultado_snapshot)
-                print(f'🔗 Pancake CRM (async): {"✅" if crm_ok else "⚠️"} {crm_msg}', flush=True)
-            except Exception as crm_err:
-                print(f'⚠️  Excepción en integración Pancake async (lead en logs): {crm_err}', flush=True)
+        # Guarda dura: si el kill-switch está off, NO lanzamos thread (cero overhead).
+        # El lead ya quedó en logs estructurados de Render (LEAD CAPTURADO arriba).
+        if PANCAKE_ENABLED and PANCAKE_API_KEY:
+            def _enviar_pancake_background(datos_snapshot, resultado_snapshot):
+                try:
+                    crm_ok, crm_msg = enviar_lead_a_pancake(datos_snapshot, resultado_snapshot)
+                    print(f'🔗 Pancake CRM (async): {"✅" if crm_ok else "⚠️"} {crm_msg}', flush=True)
+                except Exception as crm_err:
+                    print(f'⚠️  Excepción en integración Pancake async (lead en logs): {crm_err}', flush=True)
 
-        # daemon=True → si gunicorn mata el worker, el thread muere también (no zombies)
-        threading.Thread(
-            target=_enviar_pancake_background,
-            args=(datos, resultado),
-            daemon=True,
-            name='pancake-crm-async',
-        ).start()
+            threading.Thread(
+                target=_enviar_pancake_background,
+                args=(datos, resultado),
+                daemon=True,
+                name='pancake-crm-async',
+            ).start()
 
         return jsonify({'ok': True, 'resultado': resultado})
     except Exception as e:
