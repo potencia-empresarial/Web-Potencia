@@ -1,5 +1,7 @@
 import os
+import re
 import json
+import traceback
 import threading
 import urllib.request
 import urllib.error
@@ -9,6 +11,33 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import anthropic
 from dotenv import dotenv_values
+
+
+def extraer_json_robusto(raw):
+    """
+    Extrae JSON de la respuesta de Claude manejando todos los formatos típicos:
+    - JSON puro
+    - JSON dentro de ```json ... ```
+    - JSON con texto explicativo antes/después
+    Levanta ValueError descriptivo si no encuentra JSON parseable.
+    """
+    if not raw or not raw.strip():
+        raise ValueError('Respuesta de Claude vacía')
+
+    raw = raw.strip()
+
+    # Caso 1: markdown fence ```json ... ``` o ``` ... ```
+    fence = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', raw, re.DOTALL)
+    if fence:
+        return json.loads(fence.group(1))
+
+    # Caso 2: buscar primer { y último } balanceados
+    start = raw.find('{')
+    end = raw.rfind('}') + 1
+    if start == -1 or end <= start:
+        raise ValueError(f'No se detectó JSON en la respuesta. Inicio: {raw[:300]!r}')
+
+    return json.loads(raw[start:end])
 
 # === API Key resolution (producción primero, .env como fallback dev) ===
 def _get_env_var(key, fallback=''):
@@ -280,6 +309,7 @@ Genera el análisis ÚNICAMENTE como JSON puro (sin markdown, sin explicaciones,
 }}"""
 
     inicio = datetime.now()
+    raw = ''  # para tener referencia si falla el parsing
 
     try:
         message = client.messages.create(
@@ -288,9 +318,7 @@ Genera el análisis ÚNICAMENTE como JSON puro (sin markdown, sin explicaciones,
             messages=[{'role': 'user', 'content': prompt}]
         )
         raw = message.content[0].text.strip()
-        start = raw.find('{')
-        end = raw.rfind('}') + 1
-        resultado = json.loads(raw[start:end])
+        resultado = extraer_json_robusto(raw)
 
         # === LOG ESTRUCTURADO — cada diagnóstico queda registrado en Render Logs ===
         duracion = (datetime.now() - inicio).total_seconds()
@@ -337,9 +365,47 @@ Genera el análisis ÚNICAMENTE como JSON puro (sin markdown, sin explicaciones,
             ).start()
 
         return jsonify({'ok': True, 'resultado': resultado})
+
+    # === MANEJO DE ERRORES GRANULAR (POE-N-01 §5: logging proactivo) ===
+    # Cada tipo de error registra contexto completo en logs y devuelve un
+    # mensaje user-friendly al frontend (no jerga técnica).
+    except anthropic.APIStatusError as e:
+        # Errores HTTP del API de Anthropic (rate limit, content policy, etc.)
+        print(f'❌ ANTHROPIC API ERROR para {datos.get("correo", "?")}: '
+              f'status={e.status_code} message={e.message}', flush=True)
+        msg_user = ('El servicio de IA está temporalmente saturado o rechazó la solicitud. '
+                    'Intenta de nuevo en 1 minuto.')
+        return jsonify({'ok': False, 'error': msg_user, 'codigo': 'anthropic_api_error'}), 503
+
+    except anthropic.APIConnectionError as e:
+        # Problema de conexión con Anthropic
+        print(f'❌ ANTHROPIC CONNECTION ERROR para {datos.get("correo", "?")}: {e}', flush=True)
+        msg_user = 'No pudimos conectar con el servicio de IA. Intenta de nuevo en unos segundos.'
+        return jsonify({'ok': False, 'error': msg_user, 'codigo': 'anthropic_conn_error'}), 503
+
+    except json.JSONDecodeError as e:
+        # Claude devolvió algo que no es JSON parseable
+        print(f'❌ JSON PARSE ERROR para {datos.get("correo", "?")}: {e}', flush=True)
+        print(f'   RAW (primeros 500 chars): {raw[:500]!r}', flush=True)
+        msg_user = ('Hubo un problema procesando la respuesta de IA. '
+                    'Intenta de nuevo (suele resolverse al reintentar).')
+        return jsonify({'ok': False, 'error': msg_user, 'codigo': 'json_parse_error'}), 500
+
+    except ValueError as e:
+        # extraer_json_robusto levantó ValueError (no encontró JSON)
+        print(f'❌ NO JSON IN CLAUDE RESPONSE para {datos.get("correo", "?")}: {e}', flush=True)
+        print(f'   RAW (primeros 500 chars): {raw[:500]!r}', flush=True)
+        msg_user = 'La respuesta de IA llegó incompleta. Intenta de nuevo.'
+        return jsonify({'ok': False, 'error': msg_user, 'codigo': 'incomplete_response'}), 500
+
     except Exception as e:
-        print(f'❌ ERROR en diagnostico para {datos.get("correo", "?")}: {e}', flush=True)
-        return jsonify({'ok': False, 'error': str(e)}), 500
+        # Cualquier otro error — log COMPLETO con traceback para debug post-mortem
+        print(f'❌ ERROR INESPERADO para {datos.get("correo", "?")}: '
+              f'{type(e).__name__}: {e}', flush=True)
+        print(f'   Traceback completo:\n{traceback.format_exc()}', flush=True)
+        msg_user = ('Hubo un error inesperado generando el diagnóstico. '
+                    'Por favor intenta de nuevo. Si persiste, contáctanos.')
+        return jsonify({'ok': False, 'error': msg_user, 'codigo': 'unexpected_error'}), 500
 
 
 if __name__ == '__main__':
