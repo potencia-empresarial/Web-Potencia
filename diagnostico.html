@@ -592,7 +592,13 @@
       }, 3500);
 
       try {
-        const res = await fetch('/api/diagnostico', {
+        // === LLAMADA DIRECTA AL BACKEND (sin pasar por proxy Netlify) ===
+        // El proxy de Netlify tiene timeout de ~26s, pero Claude API tarda ~27s,
+        // resultando en HTTP 504 Gateway Timeout y respuesta HTML inválida.
+        // Llamamos directo a Render (CORS habilitado en backend para /api/*).
+        // Ver DOC-R-05 §3 para contexto del incidente.
+        const API_URL = 'https://potencia-api.onrender.com/api/diagnostico';
+        const res = await fetch(API_URL, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
