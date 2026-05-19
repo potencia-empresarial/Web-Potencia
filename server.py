@@ -1,5 +1,6 @@
 import os
 import json
+import threading
 import urllib.request
 import urllib.error
 from pathlib import Path
@@ -316,13 +317,23 @@ Genera el análisis ÚNICAMENTE como JSON puro (sin markdown, sin explicaciones,
         }
         print(f'📊 LEAD CAPTURADO: {json.dumps(log_lead, ensure_ascii=False)}', flush=True)
 
-        # === ENVIAR A PANCAKE CRM (defensivo: si falla, NO interrumpe respuesta al user) ===
-        try:
-            crm_ok, crm_msg = enviar_lead_a_pancake(datos, resultado)
-            print(f'🔗 Pancake CRM: {"✅" if crm_ok else "⚠️"} {crm_msg}', flush=True)
-        except Exception as crm_err:
-            # Cualquier error inesperado en la integración Pancake NO debe romper el diagnóstico
-            print(f'⚠️  Excepción inesperada en integración Pancake (lead igual quedó en logs): {crm_err}', flush=True)
+        # === ENVIAR A PANCAKE CRM EN BACKGROUND (POE-N-01 §2: no bloquear ruta crítica) ===
+        # Por qué async: el response al user sale YA, liberando memoria del request HTTP.
+        # Pancake corre en su propio thread; si falla, queda en logs sin afectar al user.
+        def _enviar_pancake_background(datos_snapshot, resultado_snapshot):
+            try:
+                crm_ok, crm_msg = enviar_lead_a_pancake(datos_snapshot, resultado_snapshot)
+                print(f'🔗 Pancake CRM (async): {"✅" if crm_ok else "⚠️"} {crm_msg}', flush=True)
+            except Exception as crm_err:
+                print(f'⚠️  Excepción en integración Pancake async (lead en logs): {crm_err}', flush=True)
+
+        # daemon=True → si gunicorn mata el worker, el thread muere también (no zombies)
+        threading.Thread(
+            target=_enviar_pancake_background,
+            args=(datos, resultado),
+            daemon=True,
+            name='pancake-crm-async',
+        ).start()
 
         return jsonify({'ok': True, 'resultado': resultado})
     except Exception as e:
