@@ -1,27 +1,151 @@
 import os
 import json
+import urllib.request
+import urllib.error
 from pathlib import Path
+from datetime import datetime
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import anthropic
 from dotenv import dotenv_values
 
 # === API Key resolution (producción primero, .env como fallback dev) ===
-API_KEY = os.environ.get('ANTHROPIC_API_KEY', '').strip()
-if not API_KEY:
+def _get_env_var(key, fallback=''):
+    """Lee primero de os.environ (producción/Render), luego de .env (desarrollo local)."""
+    val = os.environ.get(key, '').strip()
+    if val:
+        return val
     env_path = Path(__file__).parent / '.env'
     if env_path.exists():
         _env = dotenv_values(dotenv_path=env_path)
-        API_KEY = (_env.get('ANTHROPIC_API_KEY') or '').strip()
+        return (_env.get(key) or fallback).strip()
+    return fallback
 
+# === ANTHROPIC (Claude API) ===
+API_KEY = _get_env_var('ANTHROPIC_API_KEY')
 if API_KEY:
     print(f'✅ ANTHROPIC_API_KEY cargada (longitud: {len(API_KEY)} chars, prefijo: {API_KEY[:12]}...)')
 else:
     print('❌ ANTHROPIC_API_KEY no encontrada — el endpoint /api/diagnostico fallará')
 
+# === PANCAKE CRM v2 — integración para persistencia de leads ===
+PANCAKE_API_KEY = _get_env_var('PANCAKE_API_KEY')
+PANCAKE_WORKSPACE_ID = _get_env_var('PANCAKE_WORKSPACE_ID', '4851')
+# Base URL Pancake CRM v2. Confirmar el path exacto del endpoint en docs.pancake.vn.
+PANCAKE_API_BASE = _get_env_var('PANCAKE_API_BASE', 'https://crm.pancake.vn/api/v2')
+# Recurso del endpoint: customers, contacts, leads (varía según versión Pancake)
+PANCAKE_RESOURCE = _get_env_var('PANCAKE_RESOURCE', 'customers')
+
+if PANCAKE_API_KEY:
+    print(f'✅ PANCAKE_API_KEY cargada para workspace {PANCAKE_WORKSPACE_ID}')
+else:
+    print('⚠️  PANCAKE_API_KEY no configurada — los leads NO se enviarán a CRM (solo quedarán en logs)')
+
 app = Flask(__name__, static_folder='.')
 CORS(app, resources={r"/api/*": {"origins": "*"}})  # Permite llamadas desde cualquier frontend
 client = anthropic.Anthropic(api_key=API_KEY) if API_KEY else None
+
+
+def enviar_lead_a_pancake(datos, resultado):
+    """
+    Envía el lead capturado a Pancake CRM.
+    Diseño defensivo: si falla, hace log pero NO interrumpe la respuesta al usuario.
+    Timeout de 10 seg para no bloquear.
+
+    Retorna: (ok: bool, mensaje: str)
+    """
+    if not PANCAKE_API_KEY:
+        return False, 'PANCAKE_API_KEY no configurada'
+
+    # === Payload mapeado: campos del diagnóstico → campos del CRM ===
+    nombre_completo = (datos.get('nombre') or '').strip()
+    partes = nombre_completo.split(' ', 1)
+    primer_nombre = partes[0] if partes else ''
+    apellido = partes[1] if len(partes) > 1 else ''
+
+    score = resultado.get('score', 0)
+    nivel = resultado.get('nivel', 'Sin clasificar')
+
+    # Notas estructuradas del diagnóstico (para que el equipo comercial tenga contexto)
+    notas = f"""DIAGNÓSTICO WEB EXPRESS — {datetime.now().strftime('%Y-%m-%d %H:%M')}
+
+📊 SCORE: {score}/100 — {nivel}
+
+🏢 EMPRESA: {datos.get('empresa', 'N/A')}
+📍 Industria: {datos.get('industria', 'N/A')}
+👥 Empleados: {datos.get('empleados', 'N/A')}
+💰 Facturación: {datos.get('facturacion', 'N/A')}
+
+🎯 OBJETIVO: {datos.get('objetivo', 'N/A')}
+⚠️ DESAFÍO: {datos.get('desafio', 'N/A')}
+
+🌐 PRESENCIA DIGITAL:
+  - Web: {datos.get('tienePaginaWeb', 'N/A')}
+  - Redes: {', '.join(datos.get('redesSociales', [])) or 'Ninguna'}
+  - CRM: {datos.get('gestionLeads', 'N/A')}
+
+⚙️ AUTOMATIZACIÓN:
+  - Tiene: {datos.get('tieneAutomatizaciones', 'N/A')}
+  - Horas manuales: {datos.get('horasManuales', 'N/A')}
+
+📣 MARKETING:
+  - Publicidad: {datos.get('tienePublicidad', 'N/A')}
+  - Presupuesto: {datos.get('presupuestoMarketing', 'N/A')}
+  - Canal ventas: {datos.get('canalVentas', 'N/A')}
+
+🎁 TOP OPORTUNIDAD SUGERIDA:
+{resultado.get('oportunidades', [{}])[0].get('titulo', 'N/A') if resultado.get('oportunidades') else 'N/A'}
+"""
+
+    # Payload estándar de Pancake CRM para crear cliente/lead
+    payload = {
+        'name': nombre_completo,
+        'first_name': primer_nombre,
+        'last_name': apellido,
+        'email': datos.get('correo', ''),
+        'company': datos.get('empresa', ''),
+        'industry': datos.get('industria', ''),
+        'source': 'diagnostico-web-express',
+        'tags': ['lead-diagnostico-web', f'nivel-{nivel.lower().replace(" ", "-")}', f'score-{score}'],
+        'notes': notas,
+        'custom_fields': {
+            'score_diagnostico': score,
+            'nivel_madurez': nivel,
+            'empleados_rango': datos.get('empleados', ''),
+            'facturacion_rango': datos.get('facturacion', ''),
+            'objetivo_principal': datos.get('objetivo', ''),
+            'desafio_principal': datos.get('desafio', ''),
+        },
+    }
+
+    # URL del endpoint Pancake CRM v2 — pasa API key como query param (patrón estándar Pancake)
+    url = f'{PANCAKE_API_BASE}/workspaces/{PANCAKE_WORKSPACE_ID}/{PANCAKE_RESOURCE}?api_key={PANCAKE_API_KEY}'
+
+    try:
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode('utf-8'),
+            headers={
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'User-Agent': 'PotencIA-Diagnostico/1.0',
+            },
+            method='POST',
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            response_data = resp.read().decode('utf-8')
+            print(f'✅ Lead enviado a Pancake CRM (HTTP {resp.status}): {response_data[:200]}', flush=True)
+            return True, f'OK (HTTP {resp.status})'
+    except urllib.error.HTTPError as e:
+        body = e.read().decode('utf-8', errors='replace')[:500]
+        print(f'❌ Pancake CRM rechazó el lead (HTTP {e.code}): {body}', flush=True)
+        return False, f'HTTP {e.code}: {body}'
+    except urllib.error.URLError as e:
+        print(f'❌ No se pudo conectar a Pancake CRM: {e.reason}', flush=True)
+        return False, f'URLError: {e.reason}'
+    except Exception as e:
+        print(f'❌ Error inesperado enviando a Pancake CRM: {e}', flush=True)
+        return False, f'Exception: {e}'
 
 
 @app.route('/health')
@@ -147,7 +271,6 @@ Genera el análisis ÚNICAMENTE como JSON puro (sin markdown, sin explicaciones,
   "mensajeFinal": "<2-3 oraciones motivadoras y específicas para esta empresa>"
 }}"""
 
-    from datetime import datetime
     inicio = datetime.now()
 
     try:
@@ -186,6 +309,14 @@ Genera el análisis ÚNICAMENTE como JSON puro (sin markdown, sin explicaciones,
             }
         }
         print(f'📊 LEAD CAPTURADO: {json.dumps(log_lead, ensure_ascii=False)}', flush=True)
+
+        # === ENVIAR A PANCAKE CRM (defensivo: si falla, NO interrumpe respuesta al user) ===
+        try:
+            crm_ok, crm_msg = enviar_lead_a_pancake(datos, resultado)
+            print(f'🔗 Pancake CRM: {"✅" if crm_ok else "⚠️"} {crm_msg}', flush=True)
+        except Exception as crm_err:
+            # Cualquier error inesperado en la integración Pancake NO debe romper el diagnóstico
+            print(f'⚠️  Excepción inesperada en integración Pancake (lead igual quedó en logs): {crm_err}', flush=True)
 
         return jsonify({'ok': True, 'resultado': resultado})
     except Exception as e:
