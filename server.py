@@ -28,19 +28,22 @@ if API_KEY:
 else:
     print('❌ ANTHROPIC_API_KEY no encontrada — el endpoint /api/diagnostico fallará')
 
-# === PANCAKE CRM — integración para persistencia de leads ===
-# Endpoint confirmado (mayo 2026):
-#   POST https://pos.pages.fm/api/v1/shops/{SHOP_ID}/crm/{TABLE_NAME}/records?api_key={KEY}
-# Donde SHOP_ID = workspace ID que aparece en la URL del panel Pancake CRM (4851 para PotencIA).
+# === PANCAKE CRM v2 — integración para persistencia de leads ===
+# El panel del usuario está en https://crm.pancake.vn/v2/workspace/4961/lead
+# La URL del API se construye reflejando esa ruta. Si el endpoint exacto difiere,
+# se puede sobrescribir vía env var PANCAKE_API_URL sin tocar código.
 PANCAKE_API_KEY = _get_env_var('PANCAKE_API_KEY')
-PANCAKE_WORKSPACE_ID = _get_env_var('PANCAKE_WORKSPACE_ID', '4851')  # = SHOP_ID en la URL
-PANCAKE_API_BASE = _get_env_var('PANCAKE_API_BASE', 'https://pos.pages.fm/api/v1')
-# Nombre EXACTO de la tabla en el CRM (case-sensitive, se ve en CRM → Tablas).
-# Defaults comunes: 'Contact', 'Customer', 'Lead'. Override con PANCAKE_TABLE_NAME en Render.
-PANCAKE_TABLE_NAME = _get_env_var('PANCAKE_TABLE_NAME', 'Contact')
+PANCAKE_WORKSPACE_ID = _get_env_var('PANCAKE_WORKSPACE_ID', '4961')
+PANCAKE_TABLE_NAME = _get_env_var('PANCAKE_TABLE_NAME', 'lead')
+# URL completa SIN ?api_key — el código se lo añade al final.
+# Default basado en patrón del UI; si Pancake usa otro endpoint, override en Render.
+PANCAKE_API_URL = _get_env_var(
+    'PANCAKE_API_URL',
+    f'https://crm.pancake.vn/api/v2/workspace/{PANCAKE_WORKSPACE_ID}/{PANCAKE_TABLE_NAME}'
+)
 
 if PANCAKE_API_KEY:
-    print(f'✅ PANCAKE_API_KEY cargada → shop {PANCAKE_WORKSPACE_ID}, tabla "{PANCAKE_TABLE_NAME}"')
+    print(f'✅ PANCAKE_API_KEY cargada → POST {PANCAKE_API_URL}')
 else:
     print('⚠️  PANCAKE_API_KEY no configurada — los leads NO se enviarán a CRM (solo quedarán en logs)')
 
@@ -121,8 +124,8 @@ def enviar_lead_a_pancake(datos, resultado):
         'Challenge': datos.get('desafio', ''),
     }
 
-    # Endpoint confirmado: /shops/{SHOP_ID}/crm/{TABLE_NAME}/records?api_key=...
-    url = f'{PANCAKE_API_BASE}/shops/{PANCAKE_WORKSPACE_ID}/crm/{PANCAKE_TABLE_NAME}/records?api_key={PANCAKE_API_KEY}'
+    # URL completa configurable. La api_key se añade aquí para no logguearla.
+    url = f'{PANCAKE_API_URL}?api_key={PANCAKE_API_KEY}'
 
     try:
         req = urllib.request.Request(
