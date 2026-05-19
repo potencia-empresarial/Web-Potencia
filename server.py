@@ -110,25 +110,20 @@ def enviar_lead_a_pancake(datos, resultado):
 {resultado.get('oportunidades', [{}])[0].get('titulo', 'N/A') if resultado.get('oportunidades') else 'N/A'}
 """
 
-    # Payload Pancake CRM v2 — usa snake_case (confirmado por respuesta HTTP 422 de Pancake:
-    # "[name] Nombre del Lead can't be blank" → indica que el campo correcto es 'name', no 'Name').
-    # Campos no reconocidos por Pancake son ignorados sin error.
+    # Payload Pancake CRM v2 — versión MÍNIMA (debug incremental).
+    # Histórico de errores:
+    # - PascalCase ('Name'): rechazado, exige snake_case
+    # - snake_case completo con tags/score/level: rechazado por "multi_value invalid"
+    #   (probablemente Pancake llama a algún campo array internamente "multi_value"
+    #   con validación estricta de tipo)
+    # Estrategia: empezar con campos universales (name, email, phone, notes) y agregar
+    # campos custom uno a uno cuando se confirme cuál tabla del CRM los acepta.
+    # TODA la info del diagnóstico va dentro de 'notes' como texto plano (no se pierde nada).
     payload = {
-        'name': nombre_completo or '(Sin nombre)',  # campo OBLIGATORIO según validación Pancake
-        'first_name': primer_nombre,
-        'last_name': apellido,
+        'name': nombre_completo or '(Sin nombre)',  # obligatorio
         'email': datos.get('correo', ''),
-        'company': datos.get('empresa', ''),
-        'industry': datos.get('industria', ''),
-        'source': 'diagnostico-web-express',
-        'tags': ['lead-diagnostico-web', f'nivel-{nivel.lower().replace(" ", "-")}', f'score-{score}'],
-        'notes': notas,
-        'score': score,
-        'level': nivel,
-        'employees': datos.get('empleados', ''),
-        'revenue': datos.get('facturacion', ''),
-        'objective': datos.get('objetivo', ''),
-        'challenge': datos.get('desafio', ''),
+        'phone': datos.get('telefono', ''),  # opcional, casi nunca lo capturamos hoy
+        'notes': notas,  # contiene TODA la info estructurada del diagnóstico
     }
 
     # URL completa configurable. La api_key se añade aquí para no logguearla.
