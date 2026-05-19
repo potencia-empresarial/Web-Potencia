@@ -110,25 +110,25 @@ def enviar_lead_a_pancake(datos, resultado):
 {resultado.get('oportunidades', [{}])[0].get('titulo', 'N/A') if resultado.get('oportunidades') else 'N/A'}
 """
 
-    # Payload Pancake CRM — usa PascalCase (convención de columnas en sus tablas custom).
-    # Los campos extra que no existan en la tabla del CRM son ignorados por la API.
-    # Si la tabla "Contact" tiene columnas con otros nombres, ajustar aquí.
+    # Payload Pancake CRM v2 — usa snake_case (confirmado por respuesta HTTP 422 de Pancake:
+    # "[name] Nombre del Lead can't be blank" → indica que el campo correcto es 'name', no 'Name').
+    # Campos no reconocidos por Pancake son ignorados sin error.
     payload = {
-        'Name': nombre_completo,
-        'FirstName': primer_nombre,
-        'LastName': apellido,
-        'Email': datos.get('correo', ''),
-        'Company': datos.get('empresa', ''),
-        'Industry': datos.get('industria', ''),
-        'Source': 'diagnostico-web-express',
-        'Tags': ['lead-diagnostico-web', f'nivel-{nivel.lower().replace(" ", "-")}', f'score-{score}'],
-        'Notes': notas,
-        'Score': score,
-        'Level': nivel,
-        'Employees': datos.get('empleados', ''),
-        'Revenue': datos.get('facturacion', ''),
-        'Objective': datos.get('objetivo', ''),
-        'Challenge': datos.get('desafio', ''),
+        'name': nombre_completo or '(Sin nombre)',  # campo OBLIGATORIO según validación Pancake
+        'first_name': primer_nombre,
+        'last_name': apellido,
+        'email': datos.get('correo', ''),
+        'company': datos.get('empresa', ''),
+        'industry': datos.get('industria', ''),
+        'source': 'diagnostico-web-express',
+        'tags': ['lead-diagnostico-web', f'nivel-{nivel.lower().replace(" ", "-")}', f'score-{score}'],
+        'notes': notas,
+        'score': score,
+        'level': nivel,
+        'employees': datos.get('empleados', ''),
+        'revenue': datos.get('facturacion', ''),
+        'objective': datos.get('objetivo', ''),
+        'challenge': datos.get('desafio', ''),
     }
 
     # URL completa configurable. La api_key se añade aquí para no logguearla.
