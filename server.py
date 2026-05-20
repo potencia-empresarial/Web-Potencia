@@ -82,7 +82,14 @@ else:
     print('🔌 PANCAKE desactivado (PANCAKE_ENABLED!=true). Leads solo en logs.')
 
 app = Flask(__name__, static_folder='.')
-CORS(app, resources={r"/api/*": {"origins": "*"}})  # Permite llamadas desde cualquier frontend
+# CORS explícito: el frontend (potenciaempresarial.site) llama directo a este backend
+# (potencia-api.onrender.com) — es cross-origin. Declaramos methods y headers permitidos
+# para que el preflight OPTIONS pase sin problemas.
+CORS(app, resources={r"/api/*": {
+    "origins": "*",
+    "methods": ["GET", "POST", "OPTIONS"],
+    "allow_headers": ["Content-Type"],
+}})
 client = anthropic.Anthropic(api_key=API_KEY) if API_KEY else None
 
 
