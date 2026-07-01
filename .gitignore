@@ -22,3 +22,6 @@ logs/
 
 # Node (si se usa)
 node_modules/
+
+# Local Netlify folder
+.netlify
