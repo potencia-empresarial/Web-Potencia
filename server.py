@@ -65,11 +65,15 @@ else:
 # Los leads quedan en logs estructurados de Render aunque Pancake esté off.
 PANCAKE_ENABLED = _get_env_var('PANCAKE_ENABLED', 'false').lower() == 'true'
 PANCAKE_API_KEY = _get_env_var('PANCAKE_API_KEY')
-PANCAKE_WORKSPACE_ID = _get_env_var('PANCAKE_WORKSPACE_ID', '4961')
-PANCAKE_TABLE_NAME = _get_env_var('PANCAKE_TABLE_NAME', 'lead')
+# API v1 del POS (patrón validado en CDA Motocesar; probado en este shop el 2026-07-12):
+#   POST {base}/shops/{shop_id}/crm/{tabla}/records?api_key=KEY
+# La v2 (crm.pancake.vn/api/v2/workspace/…) creaba el registro pero IGNORABA los campos
+# (las claves en minúscula no coinciden con los slugs reales de la tabla) → contactos vacíos.
+PANCAKE_SHOP_ID = _get_env_var('PANCAKE_SHOP_ID', '1022053221')  # shop de Potencia en Pancake POS
+PANCAKE_TABLE_NAME = _get_env_var('PANCAKE_TABLE_NAME', 'Contact')
 PANCAKE_API_URL = _get_env_var(
     'PANCAKE_API_URL',
-    f'https://crm.pancake.vn/api/v2/workspace/{PANCAKE_WORKSPACE_ID}/{PANCAKE_TABLE_NAME}'
+    f'https://pos.pages.fm/api/v1/shops/{PANCAKE_SHOP_ID}/crm/{PANCAKE_TABLE_NAME}/records'
 )
 # Timeout corto: si Pancake no responde en X seg, abortamos y NO bloqueamos al user.
 PANCAKE_TIMEOUT_SEG = int(_get_env_var('PANCAKE_TIMEOUT_SEG', '5'))
@@ -146,20 +150,14 @@ def enviar_lead_a_pancake(datos, resultado):
 {resultado.get('oportunidades', [{}])[0].get('titulo', 'N/A') if resultado.get('oportunidades') else 'N/A'}
 """
 
-    # Payload Pancake CRM v2 — versión MÍNIMA (debug incremental).
-    # Histórico de errores:
-    # - PascalCase ('Name'): rechazado, exige snake_case
-    # - snake_case completo con tags/score/level: rechazado por "multi_value invalid"
-    #   (probablemente Pancake llama a algún campo array internamente "multi_value"
-    #   con validación estricta de tipo)
-    # Estrategia: empezar con campos universales (name, email, phone, notes) y agregar
-    # campos custom uno a uno cuando se confirme cuál tabla del CRM los acepta.
-    # TODA la info del diagnóstico va dentro de 'notes' como texto plano (no se pierde nada).
+    # Slugs REALES de la tabla Contact del shop 1022053221, confirmados con
+    # GET /crm/tables + POST de prueba exitoso (2026-07-12): Name (título,
+    # obligatorio), Phone, Email, Note. TODA la info del diagnóstico va en 'Note'.
     payload = {
-        'name': nombre_completo or '(Sin nombre)',  # obligatorio
-        'email': datos.get('correo', ''),
-        'phone': datos.get('telefono', ''),  # opcional, casi nunca lo capturamos hoy
-        'notes': notas,  # contiene TODA la info estructurada del diagnóstico
+        'Name': nombre_completo or '(Sin nombre)',
+        'Email': datos.get('correo', ''),
+        'Phone': datos.get('telefono', ''),  # opcional, casi nunca lo capturamos hoy
+        'Note': notas,
     }
 
     # URL completa configurable. La api_key se añade aquí para no logguearla.
