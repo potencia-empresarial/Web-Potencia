@@ -76,6 +76,11 @@
       .no-print { display: none !important; }
       body { background: white; }
     }
+
+    /* PDF (html2pdf): cada tarjeta del reporte es atómica — nunca se corta
+       entre páginas. Sustituye al modo 'avoid-all', que con bloques grandes
+       generaba huecos y saltos deformes. */
+    #reporteContenido > div { break-inside: avoid; page-break-inside: avoid; }
   </style>
 </head>
 <body class="min-h-screen">
@@ -773,17 +778,27 @@
         btn.disabled = true;
       }
 
+      // Escala DINÁMICA acotada por el límite de lienzo de Safari iOS (~16,7M px).
+      // Con scale fijo 3 el canvas del reporte (~900×4000 px CSS) superaba ese tope
+      // y el PDF salía distorsionado/corrupto justo en móvil (de donde viene casi
+      // todo el tráfico de pauta). En desktop se veía bien, por eso no se detectó.
+      const anchoCss = 900;
+      const anchoActual = Math.max(elemento.clientWidth, 1);
+      const altoCss = Math.max(elemento.scrollHeight, 1) * (anchoCss / anchoActual);
+      const LIMITE_CANVAS_PX = 12000000; // margen de seguridad bajo el tope de iOS
+      const escala = Math.max(1.25, Math.min(2.5, Math.sqrt(LIMITE_CANVAS_PX / (anchoCss * altoCss))));
+
       const opt = {
         margin: [12, 10, 12, 10],
         filename: filename,
-        image: { type: 'jpeg', quality: 1.0 },          // calidad máxima
+        image: { type: 'jpeg', quality: 0.95 },
         html2canvas: {
-          scale: 3,                                       // ← 50% más nítido que antes (scale 2)
+          scale: escala,
           useCORS: true,
           letterRendering: true,                          // mejor renderizado de texto
           allowTaint: false,
           backgroundColor: '#F2F2F2',
-          windowWidth: 1200                               // ancho fijo para consistencia
+          windowWidth: anchoCss                           // ancho fijo para consistencia
         },
         jsPDF: {
           unit: 'mm',
@@ -791,7 +806,9 @@
           orientation: 'portrait',
           compress: true
         },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // evita cortes feos
+        // 'css' respeta el break-inside:avoid de cada tarjeta (ver <style>).
+        // 'avoid-all' quedó descartado: con bloques grandes deformaba el layout.
+        pagebreak: { mode: ['css', 'legacy'] }
       };
 
       html2pdf().set(opt).from(elemento).save().then(() => {
